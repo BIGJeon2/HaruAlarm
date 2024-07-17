@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -107,8 +109,8 @@ fun MyApp() {
             AnimatedContent(
                 targetState = selectedIndex,
                 transitionSpec = {
-                    slideInHorizontally { width -> width } + fadeIn() with
-                            slideOutHorizontally { width -> -width } + fadeOut()
+                    (slideInHorizontally { width -> width } + fadeIn()).togetherWith(
+                        slideOutHorizontally { width -> -width } + fadeOut())
                 }, label = ""
             ) { targetIndex ->
                 when (targetIndex) {
@@ -189,6 +191,7 @@ fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
     }
 }
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 fun AlarmCard(alarms: MutableList<Alarm>) {
     val alarmList by remember {
@@ -228,7 +231,7 @@ fun AlarmCard(alarms: MutableList<Alarm>) {
                     isEnabled = alarm.isEnabled,
                     daysOfWeek = alarm.daysOfWeek
                 )
-                Divider(color = Color.LightGray, thickness = 1.dp)
+                HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
             }
         }
     }
