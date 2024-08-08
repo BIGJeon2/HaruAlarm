@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun MyApp() {
@@ -98,7 +97,7 @@ fun MyApp() {
             .background(color = MainColor),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        TopBar()
+        TopBar(alarms[0])
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -114,7 +113,7 @@ fun MyApp() {
                 }, label = ""
             ) { targetIndex ->
                 when (targetIndex) {
-                    0 -> AlarmCard(alarms)
+                    0 -> AlarmListCardView(alarms)
                     1 -> CardBox(content = "Calendar Content")
                     2 -> CardBox(content = "Settings Content")
                 }
@@ -139,12 +138,12 @@ fun CardBox(content: String) {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(alarm: Alarm) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        contentAlignment = Alignment.CenterStart
+        contentAlignment = Alignment.Center
     ) {
         Text(text = "하루의 시작", style = MaterialTheme.typography.titleLarge, color = Color.White)
     }
@@ -193,7 +192,7 @@ fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AlarmCard(alarms: MutableList<Alarm>) {
+fun AlarmListCardView(alarms: MutableList<Alarm>) {
     val alarmList by remember {
         mutableStateOf(alarms)
     }
