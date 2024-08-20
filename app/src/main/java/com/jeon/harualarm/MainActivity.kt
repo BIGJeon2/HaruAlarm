@@ -73,6 +73,7 @@ var alarms = arrayListOf(
     Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")),
     Alarm("08:00 AM", false, listOf("토", "일")),
     Alarm("09:00 AM", true, listOf("월", "수", "금")),
+
 )
 
 class MainActivity : ComponentActivity() {
@@ -87,7 +88,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun MyApp() {
