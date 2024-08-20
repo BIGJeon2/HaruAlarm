@@ -69,11 +69,10 @@ import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.ui.theme.white
 
-var alarms = arrayListOf(
+val alarms = mutableListOf(
     Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")),
     Alarm("08:00 AM", false, listOf("토", "일")),
     Alarm("09:00 AM", true, listOf("월", "수", "금")),
-
 )
 
 class MainActivity : ComponentActivity() {
@@ -88,6 +87,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun MyApp() {
@@ -98,6 +98,7 @@ fun MyApp() {
             .background(color = MainColor),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        TopBar()
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,13 +193,10 @@ fun BottomNavBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AlarmCard(alarms: List<Alarm>) {
-    var alarmList by remember { mutableStateOf(alarms) }
-
-    fun addAlarm() {
-        alarmList = alarmList + Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금"))
+fun AlarmCard(alarms: MutableList<Alarm>) {
+    val alarmList by remember {
+        mutableStateOf(alarms)
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -237,7 +235,10 @@ fun AlarmCard(alarms: List<Alarm>) {
             }
         }
     }
+}
 
+fun addAlarm() {
+    alarms.add(Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")))
 }
 
 @Composable
@@ -259,7 +260,7 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
         ) {
             Text(
                 text = time,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Black
             )
             Switch(
