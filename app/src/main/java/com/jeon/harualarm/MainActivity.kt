@@ -95,10 +95,9 @@ fun MyApp() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MainColor),
+            .background(color = white),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        TopBar()
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -146,7 +145,6 @@ fun TopBar() {
             .padding(8.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        Text(text = "하루의 시작", style = MaterialTheme.typography.titleLarge, color = Color.White)
     }
 }
 
