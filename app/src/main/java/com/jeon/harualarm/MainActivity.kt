@@ -242,7 +242,6 @@ fun addAlarm() {
 @Composable
 fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
     var alarmEnabled by remember { mutableStateOf(isEnabled) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
