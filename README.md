@@ -1,8 +1,6 @@
-엡 이름 : 하루 알람(Haru Alarm)
-제공 목정 : 알람 발생 시 현재 날씨에 대한 정보 제공
-사용 언어 : Kotlin
-사용 기술 :  
-- Rest-API
-- Compose
-- Room DB
-- MVVM
+엡 이름 : 나의 하루(일정 관리)
+제공 목적 : 일정 관리 및 알람 설정 기능 제공
+제공 OS : AOS, IOS
+Framework : Flutter
+Language : Dart
+Design : Figma
