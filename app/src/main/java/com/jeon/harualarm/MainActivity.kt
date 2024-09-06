@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,7 +66,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -86,6 +90,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.abs
 
 val alarms = mutableListOf(
     Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")),
@@ -99,110 +104,100 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HaruAlarmTheme {
-                CalenderView()
+                MainView()
             }
         }
     }
 }
 
 @Composable
-private fun CalenderView(){
-    val calenderInstance = Calendar.getInstance()
-    val time = remember {
-        mutableStateOf(calenderInstance)
+private fun MainView(){
+    Column{
+        Spacer(modifier = Modifier.height(20.dp))
+        CalenderView()
+        TodoListContainer()
     }
+}
+
+@Composable
+private fun CalenderView() {
+    val calenderInstance = Calendar.getInstance()
+    val time = remember { mutableStateOf(calenderInstance) }
+    var startX by remember { mutableStateOf(0f) }
+    var endX by remember { mutableStateOf(0f) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(MainColor)
             .pointerInput(Unit) {
-                detectHorizontalDragGestures { change, dragAmount ->
-                    change.consume()
-                    if (dragAmount > 0) {
-                        // 오른쪽으로 슬라이드 -> 이전 달로 이동
-                        val newDate = Calendar.getInstance()
-                        newDate.time = time.value.time
-                        newDate.add(Calendar.MONTH, -1)
-                        time.value = newDate
-                    } else {
-                        // 왼쪽으로 슬라이드 -> 다음 달로 이동
-                        val newDate = Calendar.getInstance()
-                        newDate.time = time.value.time
-                        newDate.add(Calendar.MONTH, 1)
-                        time.value = newDate
+                detectHorizontalDragGestures(
+                    onDragStart = { offset ->
+                        startX = offset.x
+                    },
+                    onDragEnd = {
+                        val dragAmount = startX - endX
+                        if (abs(dragAmount) >= 250) {
+                            // 드래그 종료 시 방향 판단
+                            if (dragAmount < 0) {
+                                // Right swipe -> 이전 달로 이동
+                                val newDate = Calendar.getInstance()
+                                newDate.time = time.value.time
+                                newDate.add(Calendar.MONTH, -1)
+                                time.value = newDate
+                            } else {
+                                // Left swipe -> 다음 달로 이동
+                                val newDate = Calendar.getInstance()
+                                newDate.time = time.value.time
+                                newDate.add(Calendar.MONTH, 1)
+                                time.value = newDate
+                            }
+                        }
+                    },
+                    onHorizontalDrag = { change, dragAmount ->
+                        change.consume()
+                        endX = change.position.x
                     }
-                }
+                )
             },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //CalenderHeader()
-        //CalendarWithSwipe()
-        CalendarHeaderBtn(time)
-        CalendarDayName(time)
-        CalendarDayList(time)
-        MyApp()
+        Column(modifier = Modifier.padding(6.dp)) {
+            CalendarHeader(time)
+            CalendarDayName()
+            CalendarDayList(time)
+        }
     }
-
 }
 
 @Composable
-private fun CalenderHeader(){
-    Text(text = "나의 하루")
-}
-
-@Composable
-private fun CalendarHeaderBtn(date: MutableState<Calendar>){
+private fun CalendarHeader(date: MutableState<Calendar>){
     // xxxx년 xx월
-    val resultTime = SimpleDateFormat("yyyy년 MM월", Locale.KOREA).format(date.value.time)
+    val resultTime = SimpleDateFormat("MM월", Locale.KOREA).format(date.value.time)
 
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = {
-            val newDate = Calendar.getInstance()
-            newDate.time = date.value.time
-            newDate.add(Calendar.MONTH, -1)
-            date.value = newDate }
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24),
-                contentDescription = null,
-                tint = Color.LightGray,
-            )
-        }
-
         Text(
             text = resultTime,
             fontSize = 30.sp,
             fontStyle = FontStyle.Normal,
-            textDecoration = TextDecoration.Underline,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Start
         )
-        IconButton(onClick = {
-            val newDate = Calendar.getInstance()
-            newDate.time = date.value.time
-            newDate.add(Calendar.MONTH, +1)
-            date.value = newDate
-        }) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
-                contentDescription = null,
-                tint = Color.LightGray,
-            )
-        }
     }
 }
 
 @Composable
-private fun CalendarDayName(date: MutableState<Calendar>){
+private fun CalendarDayName(){
     val nameList = listOf("일","월","화","수","목","금","토")
     Row(
         modifier = Modifier
-            .padding(10.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         nameList.forEach {
@@ -213,7 +208,7 @@ private fun CalendarDayName(date: MutableState<Calendar>){
             ) {
                 Text(
                     text = it,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.ExtraBold
                 )
             }
@@ -222,56 +217,88 @@ private fun CalendarDayName(date: MutableState<Calendar>){
 }
 
 @Composable
-private fun CalendarDayList(date: MutableState<Calendar>){
-    //달력 그리는 공식 -> JetPack Compose로 달력 모양 그리는 방법
+private fun CalendarDayList(date: MutableState<Calendar>) {
+    // 달력 그리는 공식
     date.value.set(Calendar.DAY_OF_MONTH, 1)
 
     val monthDayMax = date.value.getActualMaximum(Calendar.DAY_OF_MONTH)
     val monthFirstDay = date.value.get(Calendar.DAY_OF_WEEK) - 1
-    val monthWeeksCount = (monthDayMax + monthFirstDay + 6) / 7
 
-    Log.d("monthDayMax", monthDayMax.toString())
-    Log.d("monthFirstDay", monthFirstDay.toString())
-    Log.d("monthWeeksCount", monthWeeksCount.toString())
+    // 이전 월과 다음 월의 날짜 계산
+    val previousMonth = date.value.clone() as Calendar
+    previousMonth.add(Calendar.MONTH, -1)
+    val previousMonthMaxDay = previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    val nextMonth = date.value.clone() as Calendar
+    nextMonth.add(Calendar.MONTH, 1)
+    val nextMonthMaxDay = nextMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    // 날짜 리스트 생성
+    val days = mutableListOf<Int>()
+    // 이전 월 날짜 추가
+    for (i in (previousMonthMaxDay - monthFirstDay + 1)..previousMonthMaxDay) {
+        days.add(i)
+    }
+    // 현재 월 날짜 추가
+    for (i in 1..monthDayMax) {
+        days.add(i)
+    }
+    // 다음 월 날짜 추가
+    val remainingDays = 35 - days.size// 35는 5주 * 7일
+    for (i in 1..remainingDays) {
+        days.add(i)
+    }
 
     Column(
-
+        modifier = Modifier
+            .background(Color.Transparent)
     ) {
-        repeat(monthWeeksCount) {week ->
+        // 5주로 최대 설정
+        var isCurrentMonth = false
+        repeat(5) { week ->
             Row(
-
+                modifier = Modifier.fillMaxWidth()
             ) {
                 repeat(7) { day ->
-                    //날짜 구하는 공식
-                    val resultDay = week * 7 + day - monthFirstDay + 1
-
-                    if (resultDay in 1 .. monthDayMax) {
+                    val index = week * 7 + day
+                    if (index < days.size) {
+                        val displayDay = days[index]
+                        if (days[index] == 1){
+                            isCurrentMonth = !isCurrentMonth
+                        }
+                        val textColor = if (isCurrentMonth) Color.Black else Color.LightGray
+                        val borderColor = if (isCurrentMonth) Color.Gray else Color.LightGray
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(10.dp),
+                                .aspectRatio(1f)
+                                .padding(2.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(white),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = resultDay.toString(),
-                                color = Color.Black,
-                                fontSize = 15.sp
-                            )
+                            Column {
+                                Text(
+                                    text = displayDay.toString(),
+                                    color = textColor,
+                                    fontSize = 12.sp,
+                                )
+                            }
+
                         }
-                    }else{
+                    } else {
                         Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
-fun MyApp() {
+fun TodoListContainer() {
     val selectedIndex by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier
@@ -314,17 +341,6 @@ fun CardBox(content: String) {
         Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
         Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
         Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
-    }
-}
-
-@Composable
-fun TopBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
     }
 }
 
@@ -436,7 +452,6 @@ fun DayOfWeekList(daysOfWeek: List<String>) {
 @Composable
 fun GreetingPreview() {
     HaruAlarmTheme {
-        CalenderView()
-        //CalendarWithSwipe()
+        MainView()
     }
 }
