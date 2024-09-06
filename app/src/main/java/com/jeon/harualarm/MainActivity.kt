@@ -121,17 +121,15 @@ private fun MainView(){
 
 @Composable
 private fun CalenderView() {
-    val calenderInstance = Calendar.getInstance()
+    val calenderInstance: Calendar = Calendar.getInstance()
     val time = remember { mutableStateOf(calenderInstance) }
     var startX by remember { mutableStateOf(0f) }
     var endX by remember { mutableStateOf(0f) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
             .clip(RoundedCornerShape(15.dp))
-            .background(MainColor)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragStart = { offset ->
@@ -175,17 +173,17 @@ private fun CalenderView() {
 @Composable
 private fun CalendarHeader(date: MutableState<Calendar>){
     // xxxx년 xx월
-    val resultTime = SimpleDateFormat("MM월", Locale.KOREA).format(date.value.time)
+    val resultTime = SimpleDateFormat("yy.MM", Locale.KOREA).format(date.value.time)
 
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = resultTime,
-            fontSize = 30.sp,
+            fontSize = 24.sp,
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Start
         )
@@ -197,7 +195,8 @@ private fun CalendarDayName(){
     val nameList = listOf("일","월","화","수","목","금","토")
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(top = 12.dp),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         nameList.forEach {
@@ -252,6 +251,7 @@ private fun CalendarDayList(date: MutableState<Calendar>) {
     Column(
         modifier = Modifier
             .background(Color.Transparent)
+            .padding(top = 12.dp)
     ) {
         // 5주로 최대 설정
         var isCurrentMonth = false
@@ -267,14 +267,14 @@ private fun CalendarDayList(date: MutableState<Calendar>) {
                             isCurrentMonth = !isCurrentMonth
                         }
                         val textColor = if (isCurrentMonth) Color.Black else Color.LightGray
-                        val borderColor = if (isCurrentMonth) Color.Gray else Color.LightGray
+                        val backgroundColor = if (days[index] == 15) MainColor else Color.White
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f)
                                 .padding(2.dp)
                                 .clip(RoundedCornerShape(10.dp))
-                                .background(white),
+                                .background(backgroundColor),
                             contentAlignment = Alignment.Center
                         ) {
                             Column {
@@ -302,8 +302,7 @@ fun TodoListContainer() {
     val selectedIndex by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = white),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
@@ -353,18 +352,16 @@ fun AlarmCard(alarms: MutableList<Alarm>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = white)
             .padding(16.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         ){
             Text(
-                text = "알람 설정",
+                text = "일정",
                 style = MaterialTheme.typography.titleSmall,
                 color = Color.Black,
             )
@@ -400,13 +397,13 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .padding(8.dp)
-            .background(color = white)
+            .clip(RoundedCornerShape(10.dp))
+            .padding(6.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(6.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -422,27 +419,6 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
                     checkedThumbColor = Color(0xFFA4E2A6),
                     uncheckedThumbColor = Color(0xFF625b71)
                 )
-            )
-        }
-        DayOfWeekList(daysOfWeek = daysOfWeek)
-    }
-}
-
-@Composable
-fun DayOfWeekList(daysOfWeek: List<String>) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        val allDays = listOf("월", "화", "수", "목", "금", "토", "일")
-        for (day in allDays) {
-            val isSelected = day in daysOfWeek
-            Text(
-                text = day,
-                fontSize = 12.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Thin,
-                color = if (isSelected) Color.Black else Color.Gray
             )
         }
     }
