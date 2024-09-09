@@ -403,20 +403,21 @@ fun AlarmCard(alarms: MutableList<Alarm>) {
             FloatingActionButton(
                 onClick = { addAlarm() },
                 modifier = Modifier
-                    .size(40.dp, 40.dp)
+                    .size(32.dp, 32.dp)
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add alarm button")
             }
         }
 
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.padding(top = 12.dp)
+        ) {
             items(alarmList) { alarm ->
                 AlarmItem(
                     time = alarm.time,
                     isEnabled = alarm.isEnabled,
                     daysOfWeek = alarm.daysOfWeek
                 )
-                HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
             }
         }
     }
@@ -432,13 +433,14 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .padding(6.dp)
+            .padding(top = 12.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(MainColor)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp),
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
