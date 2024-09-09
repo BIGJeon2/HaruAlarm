@@ -10,6 +10,8 @@ activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 hilt = "2.51.1"
 ksp = "1.9.0-1.0.13"
+room = "2.6.1"
+retrofit = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,6 +31,11 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+retrofit-android = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
+retrofit-converter = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
+room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

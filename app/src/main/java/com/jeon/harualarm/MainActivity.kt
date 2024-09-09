@@ -56,6 +56,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -112,7 +113,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun MainView(){
-    Column{
+    Column(
+        modifier = Modifier.background(MainColor)
+    ){
         Spacer(modifier = Modifier.height(20.dp))
         CalenderView()
         TodoListContainer()
@@ -128,8 +131,9 @@ private fun CalenderView() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
+            .padding(12.dp)
             .clip(RoundedCornerShape(15.dp))
+            .background(Color.White)
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onDragStart = { offset ->
@@ -154,7 +158,7 @@ private fun CalenderView() {
                             }
                         }
                     },
-                    onHorizontalDrag = { change, dragAmount ->
+                    onHorizontalDrag = { change, _ ->
                         change.consume()
                         endX = change.position.x
                     }
@@ -174,16 +178,38 @@ private fun CalenderView() {
 private fun CalendarHeader(date: MutableState<Calendar>){
     // xxxx년 xx월
     val resultTime = SimpleDateFormat("yy.MM", Locale.KOREA).format(date.value.time)
+    val beforeMonthDate = Calendar.getInstance()
+    beforeMonthDate.time = date.value.time
+    beforeMonthDate.add(Calendar.MONTH, -1)
+    val nextMonthDate = Calendar.getInstance()
+    nextMonthDate.time = date.value.time
+    nextMonthDate.add(Calendar.MONTH, -1)
+    val nextMonth = SimpleDateFormat("yy.MM", Locale.KOREA).format(nextMonthDate.time)
+    val beforeMonth = SimpleDateFormat("yy.MM", Locale.KOREA).format(beforeMonthDate.time)
 
-    Row(
+        Row(
         modifier = Modifier
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
+            text = beforeMonth,
+            fontSize = 12.sp,
+            color = Color.Gray,
+            fontStyle = FontStyle.Normal,
+            textAlign = TextAlign.Start
+        )
+        Text(
             text = resultTime,
             fontSize = 24.sp,
+            fontStyle = FontStyle.Normal,
+            textAlign = TextAlign.Start
+        )
+        Text(
+            text = nextMonth,
+            fontSize = 12.sp,
+            color = Color.Gray,
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Start
         )
@@ -277,12 +303,18 @@ private fun CalendarDayList(date: MutableState<Calendar>) {
                                 .background(backgroundColor),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column {
-                                Text(
-                                    text = displayDay.toString(),
-                                    color = textColor,
-                                    fontSize = 12.sp,
-                                )
+                            Column{
+                                TextButton(
+                                    onClick = {
+
+                                    },
+                                ){
+                                    Text(
+                                        text = displayDay.toString(),
+                                        color = textColor,
+                                        fontSize = 12.sp,
+                                    )
+                                }
                             }
 
                         }
@@ -302,7 +334,10 @@ fun TodoListContainer() {
     val selectedIndex by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(12.dp)
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color.White),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Box(

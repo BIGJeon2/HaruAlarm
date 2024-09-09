@@ -52,19 +52,22 @@ android {
 }
 
 dependencies {
-    val nav_version = "2.4.2"
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+/*    val nav_version = "2.4.2"
+    implementation("androidx.navigation:navigation-compose:$nav_version")*/
 
     //Retrofit
-    val retrofit_version = "2.11.0"
-    implementation("com.squareup.retrofit2:retrofit:$retrofit_version")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofit_version")
+    implementation(libs.retrofit.android)
+    annotationProcessor(libs.retrofit.converter)
 
     //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+
+    //room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
