@@ -18,6 +18,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -403,7 +404,7 @@ fun AlarmCard(alarms: MutableList<Alarm>) {
             FloatingActionButton(
                 onClick = { addAlarm() },
                 modifier = Modifier
-                    .size(32.dp, 32.dp)
+                    .size(40.dp, 40.dp)
             ) {
                 Icon(Icons.Filled.Add, contentDescription = "Add alarm button")
             }
