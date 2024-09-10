@@ -146,16 +146,10 @@ private fun CalenderView() {
                             // 드래그 종료 시 방향 판단
                             if (dragAmount < 0) {
                                 // Right swipe -> 이전 달로 이동
-                                val newDate = Calendar.getInstance()
-                                newDate.time = time.value.time
-                                newDate.add(Calendar.MONTH, -1)
-                                time.value = newDate
+
                             } else {
                                 // Left swipe -> 다음 달로 이동
-                                val newDate = Calendar.getInstance()
-                                newDate.time = time.value.time
-                                newDate.add(Calendar.MONTH, 1)
-                                time.value = newDate
+
                             }
                         }
                     },
@@ -446,18 +440,25 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = time,
+                text = "일과 목록 1",
+                fontSize = 16.sp,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Black
             )
-            Switch(
+            Text(
+                text = time,
+                fontSize = 12.sp,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black
+            )
+            /*Switch(
                 checked = alarmEnabled,
                 onCheckedChange = { alarmEnabled = it },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color(0xFFA4E2A6),
                     uncheckedThumbColor = Color(0xFF625b71)
                 )
-            )
+            )*/
         }
     }
 }
