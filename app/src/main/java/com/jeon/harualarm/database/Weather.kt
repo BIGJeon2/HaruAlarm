@@ -1,6 +1,4 @@
-package com.jeon.harualarm.data
-
-import okhttp3.Response
+package com.jeon.harualarm.database
 
 data class Weather(val response: Response) {
     data class Response(

@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +42,7 @@ import kotlin.math.abs
 class CalendarScreen(private val viewmodel: CalendarViewModel) {
     @Composable
     fun CalendarView() {
-        var startX by remember { mutableFloatStateOf(0f) }
+        var startX by remember { mutableFloatStateOf(0f)}
         var endX by remember { mutableFloatStateOf(0f) }
         Column(
             modifier = Modifier
@@ -81,7 +82,7 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
     @Composable
     private fun CalendarHeader(){
         // selectedDate를 State로 관찰
-        val selectedDate = viewmodel.selectedDate.value
+        val selectedDate = viewmodel.currDate.value
 
         // 이전 및 다음 달 계산
         val nextMonth = DateProvider().getNextMonth(selectedDate)
@@ -144,7 +145,7 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
 
     @Composable
     private fun CalendarDayList() {
-        val selectedDate = viewmodel.selectedDate.value
+        val selectedDate = viewmodel.currDate.value
         val monthDayMax = selectedDate.getActualMaximum(Calendar.DAY_OF_MONTH)
         val monthFirstDay = selectedDate.get(Calendar.DAY_OF_WEEK) - 1
 

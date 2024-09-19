@@ -1,7 +1,6 @@
 package com.jeon.harualarm.service
 
-import android.util.Xml.Encoding
-import com.jeon.harualarm.data.Weather
+import com.jeon.harualarm.database.Weather
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

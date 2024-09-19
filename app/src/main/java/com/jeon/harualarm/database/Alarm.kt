@@ -1,4 +1,4 @@
-package com.jeon.harualarm.data
+package com.jeon.harualarm.database
 
 data class Alarm(
     val time: String,
