@@ -9,10 +9,17 @@ import java.util.Date
     tableName = "todo_list"
 )
 data class Todo(
-    @PrimaryKey val date: Date,
-    @ColumnInfo(name = "type") val type: Type,
-    @ColumnInfo(name = "name")val name: String,
-    @ColumnInfo(name = "description")val description: String,
-    @ColumnInfo(name = "isAlarmed")val isAlarmEnabled: Boolean,
-    @ColumnInfo(name = "creation_date")val creationDate: Date
-)
+    @ColumnInfo(name = "type")
+    var type: Type = Type.DAY,
+    @ColumnInfo(name = "name")
+    var name: String = "",
+    @ColumnInfo(name = "description")
+    var description: String = "",
+    @ColumnInfo(name = "isAlarmed")
+    var isAlarmEnabled: Boolean = false,
+    @ColumnInfo(name = "creation_date")
+    var creationDate: Date = Date()
+){
+    @PrimaryKey(autoGenerate = true)
+    var id: Int? = null
+}

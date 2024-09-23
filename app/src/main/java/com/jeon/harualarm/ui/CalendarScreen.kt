@@ -231,7 +231,5 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
 @Composable
 fun CalendarPreview(){
     HaruAlarmTheme {
-        val calendarViewModel = CalendarViewModel()
-        CalendarScreen(calendarViewModel).CalendarView()
     }
 }
