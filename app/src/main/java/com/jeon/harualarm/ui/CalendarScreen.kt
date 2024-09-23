@@ -85,9 +85,9 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
         val selectedDate = viewmodel.currDate.value
 
         // 이전 및 다음 달 계산
-        val nextMonth = DateProvider().getNextMonth(selectedDate)
-        val currMonth =  DateProvider().getMonthToString(selectedDate)
-        val beforeMonth = DateProvider().getBeforeMonth(selectedDate)
+        val nextMonth = DateProvider().getNextMonth(selectedDate.time)
+        val currMonth =  DateProvider().getMonthToString(selectedDate.time)
+        val beforeMonth = DateProvider().getBeforeMonth(selectedDate.time)
 
         Row(
             modifier = Modifier
@@ -193,7 +193,7 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
                                 isCurrentMonth = !isCurrentMonth
                             }
                             val textColor = if (isCurrentMonth) Color.Black else Color.LightGray
-                            val backgroundColor = if (days[index].toString() == DateProvider().getDayToString(selectedDate)) MainColor else Color.White
+                            val backgroundColor = if (days[index].toString() == DateProvider().getDayToString(selectedDate.time)) MainColor else Color.White
                             Box(
                                 modifier = Modifier
                                     .weight(1f)

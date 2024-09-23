@@ -31,6 +31,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,6 +52,7 @@ import com.jeon.harualarm.ui.CalendarScreen
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
+import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import java.util.Calendar
 
@@ -106,7 +109,7 @@ fun TodoListContainer(viewModel: CalendarViewModel) {
                 }, label = ""
             ) { targetIndex ->
                 when (targetIndex) {
-                    0 -> AlarmCard(alarms, viewModel)
+                    0 -> AlarmCard(viewModel)
                     1 -> CardBox(content = "Calendar Content")
                     2 -> CardBox(content = "Settings Content")
                 }
@@ -131,10 +134,8 @@ fun CardBox(content: String) {
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AlarmCard(alarms: MutableList<Alarm>, viewModel: CalendarViewModel) {
-    val alarmList by remember {
-        mutableStateOf(alarms)
-    }
+fun AlarmCard(viewModel: CalendarViewModel) {
+    val alarmList = viewModel.todoList
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -152,7 +153,7 @@ fun AlarmCard(alarms: MutableList<Alarm>, viewModel: CalendarViewModel) {
                 color = Color.Black,
             )
             FloatingActionButton(
-                onClick = { viewModel.addTodoList(Calendar.getInstance().time) },
+                onClick = { viewModel.addTodoList(Calendar.getInstance().time)},
                 modifier = Modifier
                     .size(40.dp, 40.dp)
             ) {
@@ -165,17 +166,13 @@ fun AlarmCard(alarms: MutableList<Alarm>, viewModel: CalendarViewModel) {
         ) {
             items(alarmList) { alarm ->
                 AlarmItem(
-                    time = alarm.time,
-                    isEnabled = alarm.isEnabled,
-                    daysOfWeek = alarm.daysOfWeek
+                    time = DateProvider().getFullDateToString(alarm.creationDate),
+                    isEnabled = alarm.isAlarmEnabled,
+                    daysOfWeek = listOf("월", "화", "수", "목", "금")
                 )
             }
         }
     }
-}
-
-fun addAlarm() {
-    alarms.add(Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")))
 }
 
 @Composable
@@ -207,14 +204,14 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Black
             )
-            /*Switch(
+            Switch(
                 checked = alarmEnabled,
                 onCheckedChange = { alarmEnabled = it },
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color(0xFFA4E2A6),
                     uncheckedThumbColor = Color(0xFF625b71)
                 )
-            )*/
+            )
         }
     }
 }

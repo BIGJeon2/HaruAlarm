@@ -2,8 +2,12 @@ package com.jeon.harualarm.viewmodels
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -23,10 +27,13 @@ class CalendarViewModel(application: Application): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance())
         private set
     private var selectedDate = mutableStateOf(Calendar.getInstance())
+    var todoList: SnapshotStateList<Todo> = mutableStateListOf()
+        private set
 
     init {
         val database = InternalDatabase.getDatabase(application).todoDao()
         repository = TodoRepository(database)
+        getAllTodoList()
     }
 
     fun setNextMonth() {
@@ -63,6 +70,22 @@ class CalendarViewModel(application: Application): ViewModel() {
         }
         viewModelScope.launch(Dispatchers.IO){
             repository.insertToDoList(newTodo)
+            getAllTodoList()
+        }
+    }
+
+    private fun getAllTodoList(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val todos = repository.getAllToDoList()
+            // 기존 todoList를 초기화하고 새로운 데이터를 추가합니다.
+            todoList.clear()
+            todoList.addAll(todos)
+        }
+    }
+
+    fun deleteTodo(todo: Todo){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteToDoList(todo)
         }
     }
 
