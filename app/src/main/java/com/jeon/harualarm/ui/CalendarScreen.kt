@@ -82,14 +82,15 @@ class CalendarScreen() {
     }
 
     @Composable
-    private fun CalendarHeader(viewmodel: CalendarViewModel){
+    private fun CalendarHeader(viewmodel: CalendarViewModel) {
         // selectedDate를 State로 관찰
         val selectedDate = viewmodel.currDate.value
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR) // 현재 연도 가져오기
 
         // 이전 및 다음 달 계산
         val nextMonth = DateProvider().getNextMonth(selectedDate.time)
-        val currMonth =  DateProvider().getMonthToString(selectedDate.time)
-        val beforeMonth = DateProvider().getBeforeMonth(selectedDate.time)
+        val currMonth = DateProvider().getMonthToString(selectedDate.time)
+        val selectedYear = Calendar.getInstance().apply { time = selectedDate.time }.get(Calendar.YEAR)
 
         Row(
             modifier = Modifier
@@ -98,18 +99,27 @@ class CalendarScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = beforeMonth,
+                text = DateProvider().getBeforeMonth(selectedDate.time),
                 fontSize = 12.sp,
                 color = Color.Gray,
                 fontStyle = FontStyle.Normal,
                 textAlign = TextAlign.Start
             )
+
+            // 현재 연도와 선택된 연도 비교
+            val displayText = if (currentYear != selectedYear) {
+                "${selectedYear}.${currMonth} " // 연도 포함
+            } else {
+                currMonth // 연도 제외
+            }
+
             Text(
-                text = currMonth,
+                text = displayText,
                 fontSize = 24.sp,
                 fontStyle = FontStyle.Normal,
                 textAlign = TextAlign.Start
             )
+
             Text(
                 text = nextMonth,
                 fontSize = 12.sp,
