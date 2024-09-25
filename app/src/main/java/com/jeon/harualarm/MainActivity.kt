@@ -48,19 +48,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import com.jeon.harualarm.database.Alarm
+import com.jeon.harualarm.ui.CalendarPreview
 import com.jeon.harualarm.ui.CalendarScreen
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
+import com.jeon.harualarm.viewmodels.JobsScreenViewModel
 import java.util.Calendar
-
-val alarms = mutableListOf(
-    Alarm("07:00 AM", true, listOf("월", "화", "수", "목", "금")),
-    Alarm("08:00 AM", false, listOf("토", "일")),
-    Alarm("09:00 AM", true, listOf("월", "수", "금")),
-)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,13 +64,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val calendarViewModel = ViewModelProvider(this, MainViewModelFactory(application))[CalendarViewModel::class.java]
+            val jobsViewModel = ViewModelProvider(this, MainViewModelFactory(application))[JobsScreenViewModel::class.java]
             HaruAlarmTheme {
                 Column(
                     modifier = Modifier.background(MainColor)
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
-                    CalendarScreen(calendarViewModel).CalendarView()
-                    TodoListContainer(calendarViewModel)
+                    CalendarScreen().CalendarView(calendarViewModel)
+                    TodoListContainer(jobsViewModel)
                 }
             }
         }
@@ -84,7 +81,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
-fun TodoListContainer(viewModel: CalendarViewModel) {
+fun TodoListContainer(viewModel: JobsScreenViewModel) {
     val selectedIndex by remember { mutableStateOf(0) }
     Column(
         modifier = Modifier
@@ -134,7 +131,7 @@ fun CardBox(content: String) {
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun AlarmCard(viewModel: CalendarViewModel) {
+fun AlarmCard(viewModel: JobsScreenViewModel) {
     val alarmList = viewModel.todoList
     Column(
         modifier = Modifier
@@ -220,5 +217,6 @@ fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
 @Composable
 fun GreetingPreview() {
     HaruAlarmTheme {
+        CalendarPreview()
     }
 }

@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import com.jeon.harualarm.MainViewModelFactory
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateProvider
@@ -39,9 +41,9 @@ import com.jeon.harualarm.viewmodels.CalendarViewModel
 import java.util.Calendar
 import kotlin.math.abs
 
-class CalendarScreen(private val viewmodel: CalendarViewModel) {
+class CalendarScreen() {
     @Composable
-    fun CalendarView() {
+    fun CalendarView(viewmodel: CalendarViewModel) {
         var startX by remember { mutableFloatStateOf(0f)}
         var endX by remember { mutableFloatStateOf(0f) }
         Column(
@@ -72,15 +74,15 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(modifier = Modifier.padding(6.dp)) {
-                CalendarHeader()
+                CalendarHeader(viewmodel)
                 CalendarDayName()
-                CalendarDayList()
+                CalendarDayList(viewmodel)
             }
         }
     }
 
     @Composable
-    private fun CalendarHeader(){
+    private fun CalendarHeader(viewmodel: CalendarViewModel){
         // selectedDate를 State로 관찰
         val selectedDate = viewmodel.currDate.value
 
@@ -144,7 +146,7 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
     }
 
     @Composable
-    private fun CalendarDayList() {
+    private fun CalendarDayList(viewmodel: CalendarViewModel) {
         val selectedDate = viewmodel.currDate.value
         val monthDayMax = selectedDate.getActualMaximum(Calendar.DAY_OF_MONTH)
         val monthFirstDay = selectedDate.get(Calendar.DAY_OF_WEEK) - 1
@@ -231,5 +233,7 @@ class CalendarScreen(private val viewmodel: CalendarViewModel) {
 @Composable
 fun CalendarPreview(){
     HaruAlarmTheme {
+        val vm = CalendarViewModel()
+        CalendarScreen().CalendarView(viewmodel = vm)
     }
 }

@@ -22,19 +22,10 @@ import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
-class CalendarViewModel(application: Application): ViewModel() {
-    private val repository: TodoRepository
+class CalendarViewModel(): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance())
         private set
     private var selectedDate = mutableStateOf(Calendar.getInstance())
-    var todoList: SnapshotStateList<Todo> = mutableStateListOf()
-        private set
-
-    init {
-        val database = InternalDatabase.getDatabase(application).todoDao()
-        repository = TodoRepository(database)
-        getAllTodoList()
-    }
 
     fun setNextMonth() {
         val newDate = Calendar.getInstance().apply {
@@ -59,34 +50,4 @@ class CalendarViewModel(application: Application): ViewModel() {
         }
         selectedDate.value = newDate
     }
-
-    fun addTodoList(time: Date){
-        val newTodo = Todo().apply {
-            type = Type.DAY
-            name = time.toString()
-            description = "Description"
-            isAlarmEnabled = true
-            creationDate = time
-        }
-        viewModelScope.launch(Dispatchers.IO){
-            repository.insertToDoList(newTodo)
-            getAllTodoList()
-        }
-    }
-
-    private fun getAllTodoList(){
-        viewModelScope.launch(Dispatchers.IO) {
-            val todos = repository.getAllToDoList()
-            // 기존 todoList를 초기화하고 새로운 데이터를 추가합니다.
-            todoList.clear()
-            todoList.addAll(todos)
-        }
-    }
-
-    fun deleteTodo(todo: Todo){
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteToDoList(todo)
-        }
-    }
-
 }
