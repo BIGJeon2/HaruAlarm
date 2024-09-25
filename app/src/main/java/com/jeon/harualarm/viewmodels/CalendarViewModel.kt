@@ -16,6 +16,7 @@ class CalendarViewModel(): ViewModel() {
     var dayList: SnapshotStateList<Date> = mutableStateListOf()
 
     init {
+        currDate.value.set(Calendar.DATE, 1)
         setDayList() // 초기 날짜 리스트 설정
     }
 
@@ -23,6 +24,7 @@ class CalendarViewModel(): ViewModel() {
         val newDate = Calendar.getInstance().apply {
             time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
             add(Calendar.MONTH, 1)
+            set(Calendar.DATE, 1)
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
@@ -32,6 +34,7 @@ class CalendarViewModel(): ViewModel() {
         val newDate = Calendar.getInstance().apply {
             time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
             add(Calendar.MONTH, -1)
+            set(Calendar.DATE, 1)
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
@@ -49,17 +52,17 @@ class CalendarViewModel(): ViewModel() {
 
     private fun setDayList() {
         dayList.clear() // 기존 리스트 초기화
-
+        val date = currDate.value
         // 현재 월의 최대 일수 및 첫 번째 날의 요일 계산
-        val monthDayMax = currDate.value.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val monthFirstDay = currDate.value.get(Calendar.DAY_OF_WEEK) // 요일 (1=일요일, 7=토요일)
+        val monthDayMax = date.getActualMaximum(Calendar.DAY_OF_MONTH)
+        val monthFirstDay = date.get(Calendar.DAY_OF_WEEK) // 요일 (1=일요일, 7=토요일)
 
         // 이전 월과 다음 월의 날짜 계산
-        val previousMonth = currDate.value.clone() as Calendar
+        val previousMonth = date.clone() as Calendar
         previousMonth.add(Calendar.MONTH, -1)
         val previousMonthMaxDay = previousMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        val nextMonth = currDate.value.clone() as Calendar
+        val nextMonth = date.clone() as Calendar
         nextMonth.add(Calendar.MONTH, 1)
 
         // 날짜 리스트 생성
@@ -71,19 +74,13 @@ class CalendarViewModel(): ViewModel() {
 
         // 현재 월 날짜 추가
         for (i in 1..monthDayMax) {
-            dayList.add(currDate.value.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
+            dayList.add(date.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
         }
 
         // 다음 월 날짜 추가
         val remainingDays = 35 - dayList.size // 총 35일로 맞추기
         for (i in 1..remainingDays) {
             dayList.add(nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
-        }
-
-        // 디버깅: 추가된 날짜 출력
-        dayList.forEach { date ->
-            val calendar = Calendar.getInstance().apply { time = date }
-            println("${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)} - Day of Week: ${calendar.get(Calendar.DAY_OF_WEEK)}")
         }
     }
 
