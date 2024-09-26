@@ -57,7 +57,8 @@ dependencies {
 
     //Retrofit
     implementation(libs.retrofit.android)
-    annotationProcessor(libs.retrofit.converter)
+    annotationProcessor(libs.retrofit.gsonconverter)
+    implementation(libs.retrofit.xmlconverter)
 
     //okhttp
     implementation(libs.squareup.okhttp3)

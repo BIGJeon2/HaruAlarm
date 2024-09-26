@@ -33,7 +33,8 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 retrofit-android = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
-retrofit-converter = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+retrofit-gsonconverter = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+retrofit-xmlconverter = {group = "com.squareup.retrofit2", name = "converter-simplexml", version.ref = "retrofit"}
 squareup-okhttp3 = {group = "com.squareup.okhttp3", name  = "okhttp", version.ref = "okhttp"}
 room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
 room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}

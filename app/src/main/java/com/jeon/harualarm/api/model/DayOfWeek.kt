@@ -1,4 +1,4 @@
-package com.jeon.harualarm.database.model
+package com.jeon.harualarm.api.model
 
 import java.util.Date
 

@@ -55,6 +55,7 @@ import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import com.jeon.harualarm.viewmodels.JobsScreenViewModel
+import com.jeon.harualarm.viewmodels.MainViewModelFactory
 import java.util.Calendar
 
 class MainActivity : ComponentActivity() {

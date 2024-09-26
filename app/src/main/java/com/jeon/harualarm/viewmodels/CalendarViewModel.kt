@@ -1,13 +1,17 @@
 package com.jeon.harualarm.viewmodels
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import com.jeon.harualarm.database.model.DayOfWeek
-import com.jeon.harualarm.database.model.DayType
+import com.jeon.harualarm.api.client.HolidayClient
+import com.jeon.harualarm.api.model.DayOfWeek
+import com.jeon.harualarm.api.model.DayType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class CalendarViewModel(): ViewModel() {
@@ -29,6 +33,7 @@ class CalendarViewModel(): ViewModel() {
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
+        getHolidays()
     }
 
     fun setBeforeMonth() {
@@ -39,6 +44,7 @@ class CalendarViewModel(): ViewModel() {
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
+        getHolidays()
     }
 
     fun setSelectedDate(selectedYear: Int, selectedMonth: Int, selectedDay: Int) {
@@ -97,6 +103,25 @@ class CalendarViewModel(): ViewModel() {
                     DayType.WEEKDAY
                 )
             )
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun getHolidays() {
+        val date = currDate.value
+        val year = date.get(Calendar.YEAR)
+        val month = String.format("%02d", date.get(Calendar.MONTH) + 1)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = HolidayClient.holidayAPI.getHolidays(year, month.toInt())
+                // response는 ApiResponse 타입입니다.
+                val holidays = response.body.items // 휴일 정보 목록
+                // 응답 처리 로직
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // 에러 처리 로직
+            }
         }
     }
 
