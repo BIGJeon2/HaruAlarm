@@ -177,7 +177,7 @@ class CalendarScreen() {
                         val index = week * 7 + day
                         if (index < days.size) {
                             val displayDay = days[index]
-                            val calendar = Calendar.getInstance().apply { time = displayDay }
+                            val calendar = Calendar.getInstance().apply { time = displayDay.date }
 
                             if (calendar.get(Calendar.DAY_OF_MONTH) == 1) {
                                 isCurrentMonth = !isCurrentMonth
@@ -196,7 +196,7 @@ class CalendarScreen() {
                             val todayTextColor = if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
                                 calendar.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
                                 calendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
-                                Color.Green // 오늘 날짜의 텍스트 색상
+                                Color.Cyan // 오늘 날짜의 텍스트 색상
                             } else {
                                 textColor // 기본 텍스트 색상
                             }

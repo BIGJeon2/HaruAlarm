@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.jeon.harualarm.database.data.Todo
+import com.jeon.harualarm.database.model.Todo
 
 @Dao
 interface TodoDao {

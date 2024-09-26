@@ -2,9 +2,10 @@ package com.jeon.harualarm.viewmodels
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import com.jeon.harualarm.database.model.DayOfWeek
+import com.jeon.harualarm.database.model.DayType
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -13,7 +14,7 @@ class CalendarViewModel(): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance(Locale.KOREA))
         private set
     var selectedDate = mutableStateOf(Calendar.getInstance())
-    var dayList: SnapshotStateList<Date> = mutableStateListOf()
+    var dayList: SnapshotStateList<DayOfWeek> = mutableStateListOf()
 
     init {
         currDate.value.set(Calendar.DATE, 1)
@@ -69,18 +70,33 @@ class CalendarViewModel(): ViewModel() {
         // 이전 월 날짜 추가
         val daysFromPreviousMonth = monthFirstDay - 1 // 이전 월에서 가져올 날짜 수
         for (i in previousMonthMaxDay - daysFromPreviousMonth + 1..previousMonthMaxDay) {
-            dayList.add(previousMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
+            dayList.add(
+                DayOfWeek(
+                    previousMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
+                    DayType.WEEKDAY
+                )
+            )
         }
 
         // 현재 월 날짜 추가
         for (i in 1..monthDayMax) {
-            dayList.add(date.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
+            dayList.add(
+                DayOfWeek(
+                    date.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
+                    DayType.WEEKDAY
+                )
+            )
         }
 
         // 다음 월 날짜 추가
         val remainingDays = 35 - dayList.size // 총 35일로 맞추기
         for (i in 1..remainingDays) {
-            dayList.add(nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time)
+            dayList.add(
+                DayOfWeek(
+                    nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
+                    DayType.WEEKDAY
+                )
+            )
         }
     }
 

@@ -47,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.jeon.harualarm.database.Alarm
 import com.jeon.harualarm.ui.CalendarPreview
 import com.jeon.harualarm.ui.CalendarScreen
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme

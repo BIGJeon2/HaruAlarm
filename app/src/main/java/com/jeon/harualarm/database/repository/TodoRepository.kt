@@ -1,7 +1,7 @@
 package com.jeon.harualarm.database.repository
 
 import com.jeon.harualarm.database.dao.TodoDao
-import com.jeon.harualarm.database.data.Todo
+import com.jeon.harualarm.database.model.Todo
 
 class TodoRepository(private val todoDao: TodoDao) {
     suspend fun getAllToDoList() = todoDao.getAllTodoList()

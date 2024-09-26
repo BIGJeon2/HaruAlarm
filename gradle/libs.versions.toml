@@ -12,6 +12,7 @@ hilt = "2.51.1"
 ksp = "1.9.0-1.0.13"
 room = "2.6.1"
 retrofit = "2.11.0"
+okhttp = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +34,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 retrofit-android = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
 retrofit-converter = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
+squareup-okhttp3 = {group = "com.squareup.okhttp3", name  = "okhttp", version.ref = "okhttp"}
 room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
 room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
 room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}

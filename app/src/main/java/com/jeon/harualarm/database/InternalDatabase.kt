@@ -4,11 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.jeon.harualarm.database.converter.TodoDataConverter
 import com.jeon.harualarm.database.dao.TodoDao
-import com.jeon.harualarm.database.data.Todo
+import com.jeon.harualarm.database.model.Todo
 
 @Database(
     entities = [Todo::class],

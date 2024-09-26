@@ -1,10 +1,9 @@
-package com.jeon.harualarm.database.data
+package com.jeon.harualarm.database.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jeon.harualarm.database.Type
-import java.util.Calendar
 import java.util.Date
 @Entity(
     tableName = "todo_list"

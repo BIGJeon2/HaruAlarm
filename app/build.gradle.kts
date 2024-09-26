@@ -59,6 +59,9 @@ dependencies {
     implementation(libs.retrofit.android)
     annotationProcessor(libs.retrofit.converter)
 
+    //okhttp
+    implementation(libs.squareup.okhttp3)
+
     //Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jeon.harualarm.database.InternalDatabase
 import com.jeon.harualarm.database.Type
-import com.jeon.harualarm.database.data.Todo
+import com.jeon.harualarm.database.model.Todo
 import com.jeon.harualarm.database.repository.TodoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
