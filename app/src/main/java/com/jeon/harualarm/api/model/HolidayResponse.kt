@@ -1,56 +1,55 @@
 package com.jeon.harualarm.api.model
 
-import org.simpleframework.xml.Element
-import org.simpleframework.xml.ElementList
-import org.simpleframework.xml.Root
+import com.tickaroo.tikxml.annotation.Element
+import com.tickaroo.tikxml.annotation.PropertyElement
+import com.tickaroo.tikxml.annotation.Xml
 
-@Root(name = "response", strict = false)
+@Xml(name = "response")
 data class HolidayResponse(
-    @field:Element(name = "header")
-    var header: Header,
-
-    @field:Element(name = "body")
-    var body: Body
+    @Element(name="header")
+    val header: Header,
+    @Element (name="body")
+    val body: Body
 )
 
-@Root(name = "header", strict = false)
+@Xml(name = "header")
 data class Header(
-    @field:Element(name = "resultCode")
+    @PropertyElement(name = "resultCode")
     var resultCode: String,
 
-    @field:Element(name = "resultMsg")
+    @PropertyElement(name = "resultMsg")
     var resultMsg: String
 )
 
-@Root(name = "body", strict = false)
+@Xml(name = "body")
 data class Body(
-    @field:ElementList(entry = "item", inline = true)
+    @Element(name = "items")
     var items: List<HolidayItem>,
 
-    @field:Element(name = "numOfRows")
+    @PropertyElement(name = "numOfRows")
     var numOfRows: Int,
 
-    @field:Element(name = "pageNo")
+    @PropertyElement(name = "pageNo")
     var pageNo: Int,
 
-    @field:Element(name = "totalCount")
+    @PropertyElement(name = "totalCount")
     var totalCount: Int
 )
 
-@Root(name = "item", strict = false)
+@Xml(name = "item")
 data class HolidayItem(
-    @field:Element(name = "dateKind")
+    @Element(name = "dateKind")
     var dateKind: String,
 
-    @field:Element(name = "dateName")
+    @Element(name = "dateName")
     var dateName: String,
 
-    @field:Element(name = "isHoliday")
+    @Element(name = "isHoliday")
     var isHoliday: String,
 
-    @field:Element(name = "locdate")
+    @Element(name = "locdate")
     var locdate: String,
 
-    @field:Element(name = "seq")
+    @Element(name = "seq")
     var seq: Int
 )

@@ -1,18 +1,25 @@
 package com.jeon.harualarm.viewmodels
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
+import com.jeon.harualarm.api.HolidayAPI
 import com.jeon.harualarm.api.client.HolidayClient
 import com.jeon.harualarm.api.model.DayOfWeek
 import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.api.model.HolidayResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.log
 
 class CalendarViewModel(): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance(Locale.KOREA))
@@ -114,13 +121,25 @@ class CalendarViewModel(): ViewModel() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = HolidayClient.holidayAPI.getHolidays(year, month.toInt())
-                // response는 ApiResponse 타입입니다.
-                val holidays = response.body.items // 휴일 정보 목록
-                // 응답 처리 로직
+                val client = HolidayClient.holidayAPI
+                client.getHolidays(year, month.toInt()).enqueue(object : Callback<HolidayResponse>{
+                    override fun onResponse(
+                        call: Call<HolidayResponse>,
+                        response: Response<HolidayResponse>
+                    ) {
+                        if (response.isSuccessful){
+                            val res = response.body()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<HolidayResponse>, t: Throwable) {
+                        Log.d("Response Is UnVaild", "Response Failed : $t")
+                    }
+
+                })
+
             } catch (e: Exception) {
                 e.printStackTrace()
-                // 에러 처리 로직
             }
         }
     }

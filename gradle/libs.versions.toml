@@ -13,6 +13,7 @@ ksp = "1.9.0-1.0.13"
 room = "2.6.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
+tikxml = "0.8.13"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -29,13 +30,28 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+#Tikxml
+tikxml-annotation = {group = "com.tickaroo.tikxml", name = "annotation", version.ref = "tikxml"}
+tikxml-core = {group = "com.tickaroo.tikxml", name = "core", version.ref = "tikxml"}
+tikxml-processor = {group = "com.tickaroo.tikxml", name = "processor", version.ref = "tikxml"}
+tikxml-converter = {group = "com.tickaroo.tikxml", name = "retrofit-converter", version.ref = "tikxml"}
+
+#Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+
+#Retrofit
 retrofit-android = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit"}
 retrofit-gsonconverter = {group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit"}
-retrofit-xmlconverter = {group = "com.squareup.retrofit2", name = "converter-simplexml", version.ref = "retrofit"}
-squareup-okhttp3 = {group = "com.squareup.okhttp3", name  = "okhttp", version.ref = "okhttp"}
+retrofit-rxjava2 = {group = "com.squareup.retrofit2", name = "adapter-rxjava2", version.ref = "retrofit"}
+
+#Okhttp
+okhttp3 = {group = "com.squareup.okhttp3", name  = "okhttp", version.ref = "okhttp"}
+okhttp3-logging-interceptor = {group = "com.squareup.okhttp3", name  = "logging-interceptor", version.ref = "okhttp"}
+
+#Room
 room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
 room-compiler = {group = "androidx.room", name = "room-compiler", version.ref = "room"}
 room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
