@@ -6,63 +6,65 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.harualarm.database.InternalDatabase
-import com.jeon.harualarm.database.Type
-import com.jeon.harualarm.database.model.Todo
-import com.jeon.harualarm.database.repository.TodoRepository
+import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.CalendarDatabase
+import com.jeon.harualarm.database.model.DAO.CalendarDao
+import com.jeon.harualarm.database.model.DTO.CalenderDate
+import com.jeon.harualarm.database.model.DTO.TodoEvent
+import com.jeon.harualarm.database.model.VO.Type
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 
 class JobsScreenViewModel(application: Application): ViewModel() {
-    private val repository: TodoRepository
-    var selectedDate = mutableStateOf(Calendar.getInstance())
-    var todoList: SnapshotStateList<Todo> = mutableStateListOf()
+    private val database: CalendarDao = CalendarDatabase.getDatabase(application).calendarDao()
+    var selectedDate = mutableStateOf(CalenderDate(
+        Calendar.getInstance().time,
+        DayType.HOLIDAY
+        )
+    )
+    var todoDTOList: SnapshotStateList<TodoEvent> = mutableStateListOf()
         private set
 
     init {
-        val database = InternalDatabase.getDatabase(application).todoDao()
-        repository = TodoRepository(database)
         getAllTodoList()
     }
 
-    fun setSelectedDate(selectedYear: Int, selectedMonth: Int, selectedDay: Int) {
-        val newDate = Calendar.getInstance().apply {
-            time = selectedDate.value.time // 현재 선택된 날짜를 기반으로 새로운 날짜 계산
-            set(Calendar.YEAR, selectedYear)
-            set(Calendar.MONTH, selectedMonth)
-            set(Calendar.DAY_OF_MONTH, selectedDay) // 선택한 날짜로 변경
-        }
+    fun setSelectedDate(newDate: CalenderDate) {
         selectedDate.value = newDate
     }
 
     fun addTodoList(time: Date){
-        val newTodo = Todo().apply {
-            type = Type.DAY
-            name = time.toString()
-            description = "Description"
-            isAlarmEnabled = true
-            creationDate = time
-        }
+        val newTodo = TodoEvent(
+            "first",
+            Type.PERIOD,
+            "NONE",
+            selectedDate.value.date,
+            selectedDate.value.date,
+            false,
+            30L,
+            selectedDate.value.calendarId
+
+        )
         viewModelScope.launch(Dispatchers.IO){
-            repository.insertToDoList(newTodo)
+            database.insertEvent(newTodo)
             getAllTodoList()
         }
     }
 
     private fun getAllTodoList(){
         viewModelScope.launch(Dispatchers.IO) {
-            val todos = repository.getAllToDoList()
+            val todos = database.getEventsForDate(selectedDate.value.calendarId)
             // 기존 todoList를 초기화하고 새로운 데이터를 추가합니다.
-            todoList.clear()
-            todoList.addAll(todos)
+            todoDTOList.clear()
+            todoDTOList.addAll(todos)
         }
     }
 
-    fun deleteTodo(todo: Todo){
+    fun deleteTodo(todo: TodoEvent){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteToDoList(todo)
+            database.deletedEvent(todo)
         }
     }
 

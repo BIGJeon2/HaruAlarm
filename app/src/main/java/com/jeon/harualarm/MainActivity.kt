@@ -132,7 +132,7 @@ fun CardBox(content: String) {
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun AlarmCard(viewModel: JobsScreenViewModel) {
-    val alarmList = viewModel.todoList
+    val alarmList = viewModel.todoDTOList
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -163,8 +163,8 @@ fun AlarmCard(viewModel: JobsScreenViewModel) {
         ) {
             items(alarmList) { alarm ->
                 AlarmItem(
-                    time = DateProvider().getFullDateToString(alarm.creationDate),
-                    isEnabled = alarm.isAlarmEnabled,
+                    time = DateProvider().getFullDateToString(alarm.endTime),
+                    isEnabled = alarm.isAlarm,
                     daysOfWeek = listOf("월", "화", "수", "목", "금")
                 )
             }

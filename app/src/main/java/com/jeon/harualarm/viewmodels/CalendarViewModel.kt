@@ -11,7 +11,7 @@ import com.jeon.harualarm.api.client.ApiServiceFactory
 import com.jeon.harualarm.api.model.DayOfWeek
 import com.jeon.harualarm.api.model.DayType
 import com.jeon.harualarm.api.model.Holidays
-import kotlinx.coroutines.CoroutineScope
+import com.jeon.harualarm.database.model.DTO.CalenderDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -24,7 +24,7 @@ class CalendarViewModel(): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance(Locale.KOREA))
         private set
     var selectedDate = mutableStateOf(Calendar.getInstance())
-    var dayList: SnapshotStateList<DayOfWeek> = mutableStateListOf()
+    var dayList: SnapshotStateList<CalenderDate> = mutableStateListOf()
 
     init {
         currDate.value.set(Calendar.DATE, 1)
@@ -39,7 +39,6 @@ class CalendarViewModel(): ViewModel() {
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
-        getHolidays()
     }
 
     fun setBeforeMonth() {
@@ -50,7 +49,6 @@ class CalendarViewModel(): ViewModel() {
         }
         currDate.value = newDate
         setDayList() // 날짜 리스트 업데이트
-        getHolidays()
     }
 
     fun setSelectedDate(selectedYear: Int, selectedMonth: Int, selectedDay: Int) {
@@ -83,7 +81,7 @@ class CalendarViewModel(): ViewModel() {
         val daysFromPreviousMonth = monthFirstDay - 1 // 이전 월에서 가져올 날짜 수
         for (i in previousMonthMaxDay - daysFromPreviousMonth + 1..previousMonthMaxDay) {
             dayList.add(
-                DayOfWeek(
+                CalenderDate(
                     previousMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
                     DayType.WEEKDAY
                 )
@@ -93,7 +91,7 @@ class CalendarViewModel(): ViewModel() {
         // 현재 월 날짜 추가
         for (i in 1..monthDayMax) {
             dayList.add(
-                DayOfWeek(
+                CalenderDate(
                     date.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
                     DayType.WEEKDAY
                 )
@@ -104,12 +102,13 @@ class CalendarViewModel(): ViewModel() {
         val remainingDays = 35 - dayList.size // 총 35일로 맞추기
         for (i in 1..remainingDays) {
             dayList.add(
-                DayOfWeek(
+                CalenderDate(
                     nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
                     DayType.WEEKDAY
                 )
             )
         }
+        getHolidays()
     }
 
     @SuppressLint("DefaultLocale")
@@ -151,6 +150,4 @@ class CalendarViewModel(): ViewModel() {
             }
         }
     }
-
-
 }
