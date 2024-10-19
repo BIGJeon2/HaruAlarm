@@ -6,11 +6,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import com.jeon.harualarm.api.HolidayAPI
-import com.jeon.harualarm.api.client.HolidayClient
+import androidx.lifecycle.viewModelScope
+import com.jeon.harualarm.api.client.ApiServiceFactory
 import com.jeon.harualarm.api.model.DayOfWeek
 import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.api.model.HolidayResponse
+import com.jeon.harualarm.api.model.Holidays
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,7 +19,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.log
 
 class CalendarViewModel(): ViewModel() {
     var currDate = mutableStateOf(Calendar.getInstance(Locale.KOREA))
@@ -119,21 +118,30 @@ class CalendarViewModel(): ViewModel() {
         val year = date.get(Calendar.YEAR)
         val month = String.format("%02d", date.get(Calendar.MONTH) + 1)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val client = HolidayClient.holidayAPI
-                client.getHolidays(year, month.toInt()).enqueue(object : Callback<HolidayResponse>{
+                val client = ApiServiceFactory.holidayAPI
+                client.getHolidays(year).clone().enqueue(object : Callback<Holidays>{
                     override fun onResponse(
-                        call: Call<HolidayResponse>,
-                        response: Response<HolidayResponse>
+                        call: Call<Holidays>,
+                        response: Response<Holidays>
                     ) {
-                        if (response.isSuccessful){
-                            val res = response.body()
+                        if (response.isSuccessful) {
+                            val apiResponse = response.body()
+                            if (apiResponse?.response?.body?.items?.item == null) {
+                                // 아이템이 없을 경우 처리
+                                println("No holiday data available.")
+                            } else {
+                                // 정상적으로 아이템이 있을 경우 처리
+                                println(apiResponse)
+                            }
+                        } else {
+                            // 오류 처리
+                            println("Error: ${response.code()}")
                         }
                     }
-
-                    override fun onFailure(call: Call<HolidayResponse>, t: Throwable) {
-                        Log.d("Response Is UnVaild", "Response Failed : $t")
+                    override fun onFailure(p0: Call<Holidays>, p1: Throwable) {
+                        Log.d("Response Failed", p1.message.toString())
                     }
 
                 })

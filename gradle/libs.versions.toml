@@ -32,10 +32,11 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 #Tikxml
-tikxml-annotation = {group = "com.tickaroo.tikxml", name = "annotation", version.ref = "tikxml"}
+tikxml-annotation = {group = "com.tickaroo.tikxml", name = "annotation", version = "0.8.13" }
 tikxml-core = {group = "com.tickaroo.tikxml", name = "core", version.ref = "tikxml"}
-tikxml-processor = {group = "com.tickaroo.tikxml", name = "processor", version.ref = "tikxml"}
 tikxml-converter = {group = "com.tickaroo.tikxml", name = "retrofit-converter", version.ref = "tikxml"}
+tikxml-autoValue = {group = "com.tickaroo.tikxml", name = "auto-value-tikxml", version.ref = "tikxml"}
+tikxml-processor = {group = "com.tickaroo.tikxml", name = "processor", version.ref = "tikxml"}
 
 #Hilt
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

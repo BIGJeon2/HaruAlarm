@@ -55,13 +55,6 @@ dependencies {
 /*    val nav_version = "2.4.2"
     implementation("androidx.navigation:navigation-compose:$nav_version")*/
 
-    //Tksml
-    implementation(libs.tikxml.annotation)
-    implementation(libs.tikxml.core)
-    annotationProcessor(libs.tikxml.processor)
-    implementation(libs.tikxml.converter)
-
-
     //Retrofit
     implementation(libs.retrofit.android)
     implementation(libs.retrofit.gsonconverter)
