@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jeon.harualarm.api.model.DayType
 import com.jeon.harualarm.database.CalendarDatabase
-import com.jeon.harualarm.database.model.DAO.CalendarDao
 import com.jeon.harualarm.database.model.DTO.CalenderDate
 import com.jeon.harualarm.database.model.DTO.TodoEvent
 import com.jeon.harualarm.database.model.VO.Type
@@ -18,12 +17,11 @@ import java.util.Calendar
 import java.util.Date
 
 class JobsScreenViewModel(application: Application): ViewModel() {
-    private val database: CalendarDao = CalendarDatabase.getDatabase(application).calendarDao()
-    var selectedDate = mutableStateOf(CalenderDate(
+    /*var selectedDate = mutableStateOf(CalenderDate(
         Calendar.getInstance().time,
         DayType.HOLIDAY
         )
-    )
+    )*/
     var todoDTOList: SnapshotStateList<TodoEvent> = mutableStateListOf()
         private set
 
@@ -31,12 +29,12 @@ class JobsScreenViewModel(application: Application): ViewModel() {
         getAllTodoList()
     }
 
-    fun setSelectedDate(newDate: CalenderDate) {
+   /* fun setSelectedDate(newDate: CalenderDate) {
         selectedDate.value = newDate
-    }
+    }*/
 
     fun addTodoList(time: Date){
-        val newTodo = TodoEvent(
+       /* val newTodo = TodoEvent(
             "first",
             Type.PERIOD,
             "NONE",
@@ -45,27 +43,26 @@ class JobsScreenViewModel(application: Application): ViewModel() {
             false,
             30L,
             selectedDate.value.calendarId
-
         )
         viewModelScope.launch(Dispatchers.IO){
             database.insertEvent(newTodo)
             getAllTodoList()
-        }
+        }*/
     }
 
     private fun getAllTodoList(){
-        viewModelScope.launch(Dispatchers.IO) {
+       /* viewModelScope.launch(Dispatchers.IO) {
             val todos = database.getEventsForDate(selectedDate.value.calendarId)
             // 기존 todoList를 초기화하고 새로운 데이터를 추가합니다.
             todoDTOList.clear()
             todoDTOList.addAll(todos)
-        }
+        }*/
     }
 
     fun deleteTodo(todo: TodoEvent){
-        viewModelScope.launch(Dispatchers.IO) {
+       /* viewModelScope.launch(Dispatchers.IO) {
             database.deletedEvent(todo)
-        }
+        }*/
     }
 
 

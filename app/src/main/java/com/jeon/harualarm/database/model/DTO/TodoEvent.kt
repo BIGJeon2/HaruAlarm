@@ -7,7 +7,7 @@ import com.jeon.harualarm.database.model.VO.Type
 import java.time.LocalDateTime
 import java.util.Date
 
-@Entity(tableName = "period_event")
+@Entity(tableName = "todo_event_table")
 data class TodoEvent(
     @ColumnInfo(name = "title")
     var title: String,

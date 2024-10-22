@@ -1,6 +1,11 @@
 package com.jeon.harualarm.util
 
+import android.annotation.SuppressLint
+import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.model.DTO.CalenderDate
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -35,6 +40,18 @@ class DateProvider {
     }
 
     fun getFullDateToString(date: Date): String {
-        return SimpleDateFormat("yyyy.MM.dd", Locale.KOREA).format(date)
+        return SimpleDateFormat("yyyyMMdd", Locale.KOREA).format(date)
     }
+
+    @SuppressLint("DefaultLocale")
+    fun getDateToString(date: Calendar): String{
+        val dateFormatted = String.format(
+            "%04d%02d%02d",
+            date.get(Calendar.YEAR),
+            date.get(Calendar.MONTH) + 1, // MONTH는 0부터 시작하므로 1을 더함
+            date.get(Calendar.DAY_OF_MONTH)
+        )
+        return dateFormatted
+    }
+
 }

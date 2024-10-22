@@ -29,11 +29,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jeon.harualarm.api.model.DayType
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import java.util.Calendar
+import java.util.Date
 import kotlin.math.abs
 
 class CalendarScreen() {
@@ -172,7 +174,7 @@ class CalendarScreen() {
                         val index = week * 7 + day
                         if (index < days.size) {
                             val displayDay = days[index]
-                            val calendar = Calendar.getInstance().apply { time = displayDay.date }
+                            val calendar = Calendar.getInstance().apply { time = displayDay.calendarDate.time }
 
                             if (calendar.get(Calendar.DAY_OF_MONTH) == 1) {
                                 isCurrentMonth = !isCurrentMonth
@@ -188,12 +190,15 @@ class CalendarScreen() {
                             }
 
                             // 오늘 날짜와 비교하여 텍스트 색상 설정
-                            val todayTextColor = if (calendar.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-                                calendar.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
-                                calendar.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)) {
+                            val todayTextColor = if (DateProvider().getDateToString(calendar).equals(DateProvider().getDateToString(today))) {
                                 Color.Cyan // 오늘 날짜의 텍스트 색상
                             } else {
-                                textColor // 기본 텍스트 색상
+                                if (days[index].type != DayType.WEEKDAY){
+                                    // 기본 텍스트 색상
+                                    textColor
+                                }else{
+                                    Color.Red
+                                }
                             }
 
                             Box(
@@ -236,7 +241,7 @@ class CalendarScreen() {
 @Composable
 fun CalendarPreview(){
     HaruAlarmTheme {
-        val vm = CalendarViewModel()
-        CalendarScreen().CalendarView(viewmodel = vm)
+        /*val vm = CalendarViewModel()
+        CalendarScreen().CalendarView(viewmodel = vm)*/
     }
 }

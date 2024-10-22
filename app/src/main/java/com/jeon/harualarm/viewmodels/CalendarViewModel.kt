@@ -8,26 +8,25 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jeon.harualarm.api.client.ApiServiceFactory
-import com.jeon.harualarm.api.model.DayOfWeek
 import com.jeon.harualarm.api.model.DayType
 import com.jeon.harualarm.api.model.Holidays
 import com.jeon.harualarm.database.model.DTO.CalenderDate
+import com.jeon.harualarm.util.DateProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.Calendar
-import java.util.Locale
 
 class CalendarViewModel(): ViewModel() {
-    var currDate = mutableStateOf(Calendar.getInstance(Locale.KOREA))
+    private val dateProvider = DateProvider()
+    var currDate = mutableStateOf(Calendar.getInstance())
         private set
     var selectedDate = mutableStateOf(Calendar.getInstance())
     var dayList: SnapshotStateList<CalenderDate> = mutableStateListOf()
 
     init {
-        currDate.value.set(Calendar.DATE, 1)
         setDayList() // 초기 날짜 리스트 설정
     }
 
@@ -62,7 +61,8 @@ class CalendarViewModel(): ViewModel() {
     }
 
     private fun setDayList() {
-        dayList.clear() // 기존 리스트 초기화
+        dayList.clear()
+        // 기존 리스트 초기화
         val date = currDate.value
         // 현재 월의 최대 일수 및 첫 번째 날의 요일 계산
         val monthDayMax = date.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -79,21 +79,27 @@ class CalendarViewModel(): ViewModel() {
         // 날짜 리스트 생성
         // 이전 월 날짜 추가
         val daysFromPreviousMonth = monthFirstDay - 1 // 이전 월에서 가져올 날짜 수
-        for (i in previousMonthMaxDay - daysFromPreviousMonth + 1..previousMonthMaxDay) {
+        for (i in previousMonthMaxDay - daysFromPreviousMonth until previousMonthMaxDay) {
+            val beforeDate = previousMonth.apply { set(Calendar.DAY_OF_MONTH, i) }
             dayList.add(
                 CalenderDate(
-                    previousMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
-                    DayType.WEEKDAY
+                    beforeDate,
+                    dateProvider.getDateToString(beforeDate),
+                    DayType.WEEKDAY,
+                    ""
                 )
             )
         }
 
         // 현재 월 날짜 추가
         for (i in 1..monthDayMax) {
+            val currDate = date.apply { set(Calendar.DAY_OF_MONTH, i) }
             dayList.add(
                 CalenderDate(
-                    date.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
-                    DayType.WEEKDAY
+                    currDate,
+                    dateProvider.getDateToString(currDate),
+                    DayType.WEEKDAY,
+                    ""
                 )
             )
         }
@@ -101,48 +107,46 @@ class CalendarViewModel(): ViewModel() {
         // 다음 월 날짜 추가
         val remainingDays = 35 - dayList.size // 총 35일로 맞추기
         for (i in 1..remainingDays) {
+            val nextDate = nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }
             dayList.add(
                 CalenderDate(
-                    nextMonth.apply { set(Calendar.DAY_OF_MONTH, i) }.time,
-                    DayType.WEEKDAY
+                    nextDate,
+                    dateProvider.getDateToString(nextDate),
+                    DayType.WEEKDAY,
+                    ""
                 )
             )
         }
-        getHolidays()
+        setHolidays()
     }
 
     @SuppressLint("DefaultLocale")
-    private fun getHolidays() {
-        val date = currDate.value
-        val year = date.get(Calendar.YEAR)
-        val month = String.format("%02d", date.get(Calendar.MONTH) + 1)
-
+    private fun setHolidays() {
+        val year = currDate.value.get(Calendar.YEAR)
+        val month = currDate.value.get(Calendar.MONTH)
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val client = ApiServiceFactory.holidayAPI
-                client.getHolidays(year).clone().enqueue(object : Callback<Holidays>{
-                    override fun onResponse(
-                        call: Call<Holidays>,
-                        response: Response<Holidays>
-                    ) {
+                client.getHolidays(year, month).clone().enqueue(object : Callback<Holidays>{
+                    override fun onResponse(call: Call<Holidays>, response: Response<Holidays>) {
                         if (response.isSuccessful) {
                             val apiResponse = response.body()
-                            if (apiResponse?.response?.body?.items?.item == null) {
-                                // 아이템이 없을 경우 처리
-                                println("No holiday data available.")
-                            } else {
-                                // 정상적으로 아이템이 있을 경우 처리
-                                println(apiResponse)
+                            if (apiResponse?.response?.body?.items?.item != null) {
+                                val holidaysList = apiResponse.response.body.items.item
+                                for (holiday in holidaysList){
+                                    for (i in dayList.indices){
+                                        if (dayList[i].date.equals(holiday.locdate)){
+                                            dayList[i].type = DayType.HOLIDAY
+                                            dayList[i].description = holiday.dateName
+                                        }
+                                    }
+                                }
                             }
-                        } else {
-                            // 오류 처리
-                            println("Error: ${response.code()}")
                         }
                     }
                     override fun onFailure(p0: Call<Holidays>, p1: Throwable) {
                         Log.d("Response Failed", p1.message.toString())
                     }
-
                 })
 
             } catch (e: Exception) {

@@ -12,6 +12,7 @@ interface HolidayAPI {
     @GET("B090041/openapi/service/SpcdeInfoService/getHoliDeInfo")
     fun getHolidays(
         @Query("solYear") year: Int,
+        @Query("solMonth") month: Int,
         @Query("ServiceKey", encoded = true) serviceKey: String = HolidayAPIKey.ENCODING_KEY,
         @Query("_type") type: String = "json",
         @Query("numOfRows") row: Int = 100
