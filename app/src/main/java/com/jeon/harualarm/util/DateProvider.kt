@@ -2,15 +2,70 @@ package com.jeon.harualarm.util
 
 import android.annotation.SuppressLint
 import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.database.model.DTO.CalenderDate
+import com.jeon.harualarm.database.model.DTO.CalendarDate
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
 import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 class DateProvider {
+    /**
+     * Get Date List
+     */
+    fun getDaysList(date: Calendar): List<CalendarDate>{
+        val dayList = ArrayList<CalendarDate>()
+        val beforeCalendar = date.clone() as Calendar
+        beforeCalendar.add(Calendar.MONTH, -1)
+        val currCalendar = date.clone() as Calendar
+        val nextCalendar = date.clone() as Calendar
+        nextCalendar.add(Calendar.MONTH, 1)
+
+        //이전 달에 대한 데이터 추가
+        val beforeDaysSize = currCalendar.get(Calendar.DAY_OF_WEEK) - 1
+        val lastIndexBeforeDate = beforeCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in beforeDaysSize - 1 downTo 0 ){
+            val beforeDate = beforeCalendar.clone() as Calendar
+            beforeDate.set(Calendar.DATE, lastIndexBeforeDate - i)
+            dayList.add(
+                CalendarDate(
+                    beforeDate,
+                    getDateToString(beforeDate),
+                    if (beforeDate[7] == 1 || beforeDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
+                    ""
+                )
+            )
+        }
+        //현재 달에 대한 date 추가
+        val currDateSize = currCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in 1 .. currDateSize){
+            val currDate = currCalendar.clone() as Calendar
+            currDate.set(Calendar.DATE, i)
+            dayList.add(
+                CalendarDate(
+                    currDate,
+                    getDateToString(currDate),
+                    if (currDate[7] == 1 || currDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
+                    ""
+                )
+            )
+        }
+        val nextDateSize = 35 - dayList.size
+        for (i in 1 .. nextDateSize){
+            val nextDate = nextCalendar.clone() as Calendar
+            nextDate.set(Calendar.DATE, i)
+            dayList.add(
+                CalendarDate(
+                    nextDate,
+                    getDateToString(nextDate),
+                    if (nextDate[7] == 1 || nextDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
+                    ""
+                )
+            )
+        }
+        return dayList
+    }
+    
     fun getBeforeMonth(date: Date): String {
         val newDate = Calendar.getInstance().apply {
             time = date // Date 객체를 Calendar에 설정

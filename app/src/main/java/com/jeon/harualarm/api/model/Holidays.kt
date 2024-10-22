@@ -23,7 +23,7 @@ data class Holidays(
                     val dateKind: String = "",
                     val dateName: String = "",
                     val isHoliday: String = "",
-                    val locdate: Int = 0,
+                    val locdate: String = "",
                     val seq: Int = 0
                 )
             }

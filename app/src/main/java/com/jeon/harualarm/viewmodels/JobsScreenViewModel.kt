@@ -2,18 +2,9 @@ package com.jeon.harualarm.viewmodels
 
 import android.app.Application
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.database.CalendarDatabase
-import com.jeon.harualarm.database.model.DTO.CalenderDate
 import com.jeon.harualarm.database.model.DTO.TodoEvent
-import com.jeon.harualarm.database.model.VO.Type
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Calendar
 import java.util.Date
 
 class JobsScreenViewModel(application: Application): ViewModel() {

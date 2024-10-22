@@ -5,19 +5,21 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.jeon.harualarm.database.model.DTO.CalenderDate
 import com.jeon.harualarm.database.model.DTO.TodoEvent
 import com.jeon.harualarm.database.converter.TodoDataConverter
 import com.jeon.harualarm.database.model.DAO.EventDAO
+import com.jeon.harualarm.database.model.DAO.HolidayDAO
+import com.jeon.harualarm.database.model.DTO.Holiday
 
 @Database(
-    entities = [TodoEvent::class],
+    entities = [Holiday::class, TodoEvent::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(TodoDataConverter::class)
 abstract class CalendarDatabase :RoomDatabase(){
-    abstract fun eventDat(): EventDAO
+    abstract fun holidayDao(): HolidayDAO
+    abstract fun eventDay(): EventDAO
 
     companion object {
         @Volatile

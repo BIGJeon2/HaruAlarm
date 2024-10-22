@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.CalendarDatabase
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateProvider
@@ -40,7 +41,7 @@ import kotlin.math.abs
 
 class CalendarScreen() {
     @Composable
-    fun CalendarView(viewmodel: CalendarViewModel) {
+    fun CalendarView(calendarDB: CalendarDatabase, viewmodel: CalendarViewModel) {
         var startX by remember { mutableFloatStateOf(0f)}
         var endX by remember { mutableFloatStateOf(0f) }
         Column(
@@ -73,7 +74,7 @@ class CalendarScreen() {
             Column(modifier = Modifier.padding(6.dp)) {
                 CalendarHeader(viewmodel)
                 CalendarDayName()
-                CalendarDayList(viewmodel)
+                CalendarDayList(calendarDB, viewmodel)
             }
         }
     }
@@ -153,12 +154,11 @@ class CalendarScreen() {
     }
 
     @Composable
-    private fun CalendarDayList(viewmodel: CalendarViewModel) {
+    private fun CalendarDayList(calendarDB: CalendarDatabase, viewmodel: CalendarViewModel) {
+        val db = calendarDB.holidayDao()
         // ViewModel에서 날짜 리스트 가져오기
         val days = viewmodel.dayList
-        val selectedDate = viewmodel.selectedDate.value // 선택된 날짜 가져오기
         val today = Calendar.getInstance() // 오늘 날짜 가져오기
-
         Column(
             modifier = Modifier
                 .background(Color.Transparent)
@@ -174,23 +174,22 @@ class CalendarScreen() {
                         val index = week * 7 + day
                         if (index < days.size) {
                             val displayDay = days[index]
+                            val textColor = if (DateProvider().getDateToString(Calendar.getInstance()) == displayDay.date) Color.Cyan else {
+                                if(displayDay.type != DayType.WEEKDAY){
+                                    Color.Red
+                                }else{
+                                    Color.Black
+                                }
+                            }
+                            val backgroundColor = if (viewmodel.selectedDate.value == displayDay.calendarDate) MainColor else Color.White
                             val calendar = Calendar.getInstance().apply { time = displayDay.calendarDate.time }
 
                             if (calendar.get(Calendar.DAY_OF_MONTH) == 1) {
                                 isCurrentMonth = !isCurrentMonth
                             }
-                            val textColor = if (isCurrentMonth) Color.Black else Color.LightGray
-                            // 선택된 날짜와 현재 날짜 비교하여 배경색 설정
-                            val backgroundColor = if (calendar.get(Calendar.DAY_OF_MONTH) == selectedDate.get(Calendar.DAY_OF_MONTH) &&
-                                calendar.get(Calendar.MONTH) == selectedDate.get(Calendar.MONTH) &&
-                                calendar.get(Calendar.YEAR) == selectedDate.get(Calendar.YEAR)) {
-                                MainColor // 선택된 날짜의 배경색
-                            } else {
-                                Color.White // 기본 배경색
-                            }
 
                             // 오늘 날짜와 비교하여 텍스트 색상 설정
-                            val todayTextColor = if (DateProvider().getDateToString(calendar).equals(DateProvider().getDateToString(today))) {
+                            val todayTextColor = if (DateProvider().getDateToString(calendar) == DateProvider().getDateToString(today)) {
                                 Color.Cyan // 오늘 날짜의 텍스트 색상
                             } else {
                                 if (days[index].type != DayType.WEEKDAY){
@@ -213,15 +212,11 @@ class CalendarScreen() {
                                 Column {
                                     TextButton(
                                         onClick = {
-                                            viewmodel.setSelectedDate(
-                                                calendar.get(Calendar.YEAR),
-                                                calendar.get(Calendar.MONTH),
-                                                calendar.get(Calendar.DAY_OF_MONTH)
-                                            )
+                                            viewmodel.setSelectedDate(displayDay.calendarDate)
                                         },
                                     ) {
                                         Text(
-                                            text = calendar.get(Calendar.DAY_OF_MONTH).toString(),
+                                            text = displayDay.calendarDate.get(Calendar.DAY_OF_MONTH).toString(),
                                             color = todayTextColor,
                                             fontSize = 12.sp,
                                         )
