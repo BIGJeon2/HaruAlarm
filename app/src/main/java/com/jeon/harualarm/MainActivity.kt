@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.background(MainColor)
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
-                    CalendarScreen().CalendarView(holidayDatabase, calendarViewModel)
+                    CalendarScreen().CalendarView(calendarViewModel)
                     TodoListContainer(jobsViewModel)
                 }
             }

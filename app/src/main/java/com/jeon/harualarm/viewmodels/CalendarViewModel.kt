@@ -14,15 +14,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() {
-    private val dateProvider = DateProvider()
-    var currDate = mutableStateOf(Calendar.getInstance().apply {
+class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(), CalendarViewModelInterface {
+    override var dateProvider = DateProvider()
+    override var currDate = mutableStateOf(Calendar.getInstance().apply {
         set(Calendar.DATE, 1)
     })
-        private set
-    var selectedDate = mutableStateOf(Calendar.getInstance())
-    var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    private lateinit var holidays: List<Holiday>
+    override var selectedDate = mutableStateOf(Calendar.getInstance())
+    override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
+    override lateinit var holidays: List<Holiday>
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -31,7 +30,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() 
         }
     }
 
-    fun setNextMonth() {
+    override fun setNextMonth() {
         val newDate = currDate.value.clone() as Calendar
         newDate.apply {
             set(Calendar.DATE, 1)
@@ -41,7 +40,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() 
         setDayList()
     }
 
-    fun setBeforeMonth() {
+    override fun setBeforeMonth() {
         val newDate = currDate.value.clone() as Calendar
         newDate.apply {
             set(Calendar.DATE, 1)
@@ -51,11 +50,11 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() 
         setDayList()
     }
 
-    fun setSelectedDate(date: Calendar) {
+    override fun setSelectedDate(date: Calendar) {
         selectedDate.value = date
     }
 
-    private fun setDayList(){
+    override fun setDayList(){
         dayList.clear()
         val days = ArrayList<CalendarDate>()
         val beforeDate = currDate.value.clone() as Calendar
@@ -113,7 +112,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() 
         dayList.addAll(days)
     }
 
-    private suspend fun getHoliday() {
+    override suspend fun getHoliday() {
         holidays = holidayRepository.getAllHolidays()
     }
 }

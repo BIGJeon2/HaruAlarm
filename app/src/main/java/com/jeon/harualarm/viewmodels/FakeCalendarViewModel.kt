@@ -1,0 +1,56 @@
+package com.jeon.harualarm.viewmodels
+
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.ViewModel
+import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.model.DTO.CalendarDate
+import com.jeon.harualarm.database.model.DTO.Holiday
+import com.jeon.harualarm.util.DateProvider
+import java.util.Calendar
+
+class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
+    override var dateProvider = DateProvider()
+    override var currDate = mutableStateOf(Calendar.getInstance().apply {
+        set(Calendar.DATE, 1)
+    })
+    override var selectedDate = mutableStateOf(Calendar.getInstance())
+    override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
+    override lateinit var holidays: List<Holiday>
+
+    init {
+        for (i in 1 until 35){
+            dayList.add(
+                CalendarDate(
+                    Calendar.getInstance(),
+                    "121212",
+                    if (i == 1 || i == 7) DayType.HOLIDAY else DayType.WEEKDAY,
+                    "휴일입니다"
+                )
+            )
+        }
+    }
+
+    override fun setNextMonth() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setBeforeMonth() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setSelectedDate(date: Calendar) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setDayList() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getHoliday() {
+        TODO("Not yet implemented")
+    }
+
+}
