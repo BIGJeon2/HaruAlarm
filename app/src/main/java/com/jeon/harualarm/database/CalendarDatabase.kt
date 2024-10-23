@@ -38,6 +38,5 @@ abstract class CalendarDatabase :RoomDatabase(){
                 return instance
             }
         }
-
     }
 }
