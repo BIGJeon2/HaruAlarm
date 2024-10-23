@@ -26,6 +26,7 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
                     Calendar.getInstance(),
                     "121212",
                     if (i == 1 || i == 7) DayType.HOLIDAY else DayType.WEEKDAY,
+                    listOf(),
                     "휴일입니다"
                 )
             )

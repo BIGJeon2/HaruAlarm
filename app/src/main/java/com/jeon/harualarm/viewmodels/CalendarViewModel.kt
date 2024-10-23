@@ -6,21 +6,26 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.model.DAO.EventDAO
 import com.jeon.harualarm.database.model.DAO.HolidayDAO
 import com.jeon.harualarm.database.model.DTO.CalendarDate
 import com.jeon.harualarm.database.model.DTO.Holiday
+import com.jeon.harualarm.database.model.DTO.TodoEvent
+import com.jeon.harualarm.database.model.VO.Type
 import com.jeon.harualarm.util.DateProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(), CalendarViewModelInterface {
+class CalendarViewModel(private val holidayRepository: HolidayDAO, private val jobDatabase: EventDAO): ViewModel(), CalendarViewModelInterface {
     override var dateProvider = DateProvider()
     override var currDate = mutableStateOf(Calendar.getInstance().apply {
         set(Calendar.DATE, 1)
     })
     override var selectedDate = mutableStateOf(Calendar.getInstance())
     override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
+    var todoDTOList: SnapshotStateList<TodoEvent> = mutableStateListOf()
+        private set
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -50,6 +55,35 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
 
     override fun setSelectedDate(date: Calendar) {
         selectedDate.value = date
+        todoDTOList.clear()
+        dayList.find { it.date == dateProvider.getDateID(selectedDate.value)}
+            ?.let { todoDTOList.addAll(it.todos) }
+    }
+
+    fun addTodoList(){
+        val event = TodoEvent(
+            dateProvider.getDateToString(selectedDate.value),
+            Type.DAY,
+            "",
+            dateProvider.getDateToString(selectedDate.value),
+            dateProvider.getDateToString(selectedDate.value),
+            true,
+            30L,
+            dateProvider.getDateID(selectedDate.value)
+        )
+        viewModelScope.launch(Dispatchers.IO){
+            jobDatabase.insertEvent(event)
+            todoDTOList.clear()
+            todoDTOList.addAll(jobDatabase.getEvent(dateProvider.getDateToString(selectedDate.value)))
+        }
+    }
+
+    fun deleteTodo(todo: TodoEvent){
+        viewModelScope.launch(Dispatchers.IO) {
+            jobDatabase.deletedEvent(todo)
+            todoDTOList.clear()
+            todoDTOList.addAll(jobDatabase.getEvent(dateProvider.getDateToString(selectedDate.value)))
+        }
     }
 
     override fun setDayList(){
@@ -66,11 +100,12 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
                 date.apply {
                     set(Calendar.DATE, i)
                 }
-                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
                 days.add(CalendarDate(
                     date,
-                    dateProvider.getDateToString(date),
+                    dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                    jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
                 ))
             }
@@ -80,11 +115,12 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
                 date.apply {
                     set(Calendar.DATE, i)
                 }
-                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
                 days.add(CalendarDate(
                     date,
-                    dateProvider.getDateToString(date),
+                    dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                    jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
                 ))
             }
@@ -99,11 +135,12 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
                 date.apply {
                     set(Calendar.DATE, i)
                 }
-                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
                 days.add(CalendarDate(
                     date,
-                    dateProvider.getDateToString(date),
+                    dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                    jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
                 ))
             }

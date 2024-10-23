@@ -19,7 +19,7 @@ interface EventDAO {
     @Update
     suspend fun updateEvent(event: TodoEvent)
 
-    @Query("SELECT * FROM todo_event_table WHERE calendarDateId = :calendarId")
-    suspend fun getEvent(calendarId: Long): List<TodoEvent>
+    @Query("SELECT * FROM todo_event_table WHERE date_id = :dateID")
+    suspend fun getEvent(dateID: String): List<TodoEvent>
 
 }

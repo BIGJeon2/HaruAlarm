@@ -19,7 +19,7 @@ import com.jeon.harualarm.database.model.DTO.Holiday
 @TypeConverters(TodoDataConverter::class)
 abstract class CalendarDatabase :RoomDatabase(){
     abstract fun holidayDao(): HolidayDAO
-    abstract fun eventDay(): EventDAO
+    abstract fun eventDao(): EventDAO
 
     companion object {
         @Volatile

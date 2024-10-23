@@ -7,5 +7,6 @@ data class CalendarDate(
     val calendarDate: Calendar,
     val date: String,
     var type: DayType,
+    var todos: List<TodoEvent>,
     var description: String
 )

@@ -10,61 +10,6 @@ import java.util.Date
 import java.util.Locale
 
 class DateProvider {
-    /**
-     * Get Date List
-     */
-    fun getDaysList(date: Calendar): List<CalendarDate>{
-        val dayList = ArrayList<CalendarDate>()
-        val beforeCalendar = date.clone() as Calendar
-        beforeCalendar.add(Calendar.MONTH, -1)
-        val currCalendar = date.clone() as Calendar
-        val nextCalendar = date.clone() as Calendar
-        nextCalendar.add(Calendar.MONTH, 1)
-
-        //이전 달에 대한 데이터 추가
-        val beforeDaysSize = currCalendar.get(Calendar.DAY_OF_WEEK) - 1
-        val lastIndexBeforeDate = beforeCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        for (i in beforeDaysSize - 1 downTo 0 ){
-            val beforeDate = beforeCalendar.clone() as Calendar
-            beforeDate.set(Calendar.DATE, lastIndexBeforeDate - i)
-            dayList.add(
-                CalendarDate(
-                    beforeDate,
-                    getDateToString(beforeDate),
-                    if (beforeDate[7] == 1 || beforeDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
-                    ""
-                )
-            )
-        }
-        //현재 달에 대한 date 추가
-        val currDateSize = currCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        for (i in 1 .. currDateSize){
-            val currDate = currCalendar.clone() as Calendar
-            currDate.set(Calendar.DATE, i)
-            dayList.add(
-                CalendarDate(
-                    currDate,
-                    getDateToString(currDate),
-                    if (currDate[7] == 1 || currDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
-                    ""
-                )
-            )
-        }
-        val nextDateSize = 35 - dayList.size
-        for (i in 1 .. nextDateSize){
-            val nextDate = nextCalendar.clone() as Calendar
-            nextDate.set(Calendar.DATE, i)
-            dayList.add(
-                CalendarDate(
-                    nextDate,
-                    getDateToString(nextDate),
-                    if (nextDate[7] == 1 || nextDate[7] == 7) DayType.WEEKEND else DayType.WEEKDAY,
-                    ""
-                )
-            )
-        }
-        return dayList
-    }
     
     fun getBeforeMonth(date: Date): String {
         val newDate = Calendar.getInstance().apply {
@@ -99,14 +44,42 @@ class DateProvider {
     }
 
     @SuppressLint("DefaultLocale")
-    fun getDateToString(date: Calendar): String{
+    fun getDateID(date: Calendar): String{
         val dateFormatted = String.format(
             "%04d%02d%02d",
             date.get(Calendar.YEAR),
             date.get(Calendar.MONTH) + 1, // MONTH는 0부터 시작하므로 1을 더함
-            date.get(Calendar.DAY_OF_MONTH)
+            date.get(Calendar.DAY_OF_MONTH),
         )
         return dateFormatted
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun getDateToString(date: Calendar): String{
+        val dateFormatted = String.format(
+            "%04d%02d%02d%2d%2d",
+            date.get(Calendar.YEAR),
+            date.get(Calendar.MONTH) + 1, // MONTH는 0부터 시작하므로 1을 더함
+            date.get(Calendar.DAY_OF_MONTH),
+            date.get(Calendar.HOUR_OF_DAY),
+            date.get(Calendar.MINUTE)
+        )
+        return dateFormatted
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun getStringToCalendar(dateString: String): Calendar {
+        val year = dateString.substring(0, 4).toInt()
+        val month = dateString.substring(4, 6).toInt() - 1 // MONTH는 0부터 시작하므로 1을 빼줌
+        val day = dateString.substring(6, 8).toInt()
+        val hour = dateString.substring(8, 10).toInt()
+        val minute = dateString.substring(10, 12).toInt()
+
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day, hour, minute, 0) // 초는 0으로 설정
+        calendar.set(Calendar.MILLISECOND, 0) // 밀리초는 0으로 설정
+
+        return calendar
     }
 
 }
