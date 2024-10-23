@@ -1,7 +1,7 @@
-package com.jeon.harualarm.api.client
+package com.jeon.harualarm.api.factory
 
-import com.jeon.harualarm.api.HolidayAPI
-import com.jeon.harualarm.api.WeatherAPI
+import com.jeon.harualarm.api.client.HolidayService
+import com.jeon.harualarm.api.client.WeatherService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -36,6 +36,6 @@ object ApiServiceFactory {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val holidayAPI: HolidayAPI = holidayClient.create(HolidayAPI::class.java)
-    val weatherAPI: WeatherAPI = weatherClient.create(WeatherAPI::class.java)
+    val holidayService: HolidayService = holidayClient.create(HolidayService::class.java)
+    val weatherService: WeatherService = weatherClient.create(WeatherService::class.java)
 }

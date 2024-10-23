@@ -5,12 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.api.model.VO.DayType
 import com.jeon.harualarm.database.model.DAO.EventDAO
 import com.jeon.harualarm.database.model.DAO.HolidayDAO
-import com.jeon.harualarm.database.model.DTO.CalendarDate
+import com.jeon.harualarm.model.DTO.CalendarDate
 import com.jeon.harualarm.database.model.DTO.Holiday
-import com.jeon.harualarm.database.model.DTO.TodoEvent
+import com.jeon.harualarm.database.model.DTO.Event
 import com.jeon.harualarm.database.model.VO.Type
 import com.jeon.harualarm.util.DateProvider
 import kotlinx.coroutines.Dispatchers
@@ -24,12 +24,73 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
     })
     override var selectedDate = mutableStateOf(Calendar.getInstance())
     override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    var todoDTOList: SnapshotStateList<TodoEvent> = mutableStateListOf()
+    var todoDTOList: SnapshotStateList<Event> = mutableStateListOf()
         private set
 
     init {
+        setDayList()
+    }
+
+    fun setDayList(calendar: Calendar){
         viewModelScope.launch(Dispatchers.IO) {
-            setDayList()
+            val days = ArrayList<CalendarDate>()
+            val beforeDate = calendar.clone() as Calendar
+            beforeDate.apply {
+                add(Calendar.MONTH, -1)
+            }
+            val beforeDaySize = calendar.get(Calendar.DAY_OF_WEEK) - 1
+            val maxOfBeforeDate = beforeDate.getActualMaximum(Calendar.DAY_OF_MONTH)
+            for (i in maxOfBeforeDate - beforeDaySize + 1  .. maxOfBeforeDate){
+                val date = beforeDate.clone() as Calendar
+                date.apply {
+                    set(Calendar.DATE, i)
+                }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
+                days.add(
+                    CalendarDate(
+                        date,
+                        dateProvider.getDateID(date),
+                        if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                        jobDatabase.getEvent(dateProvider.getDateID(date)),
+                        holiday?.description ?: ""
+                    )
+                )
+            }
+
+            for (i in 1 .. calendar.getActualMaximum(Calendar.DAY_OF_MONTH)){
+                val date = (calendar.clone() as Calendar).apply { set(Calendar.DATE, i) }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
+                days.add(
+                    CalendarDate(
+                        date,
+                        dateProvider.getDateID(date),
+                        if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                        jobDatabase.getEvent(dateProvider.getDateID(date)),
+                        holiday?.description ?: ""
+                    )
+                )
+            }
+
+            val nextDate = calendar.clone() as Calendar
+            beforeDate.apply { add(Calendar.MONTH, 1) }
+
+            for (i in 1 ..  35 - days.size){
+                val nextDate: Calendar = (nextDate.clone() as Calendar).apply {
+                    set(Calendar.DATE, i)
+                }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(nextDate))
+                days.add(
+                    CalendarDate(
+                        nextDate,
+                        dateProvider.getDateID(nextDate),
+                        if (nextDate[7] == 1 || nextDate[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                        jobDatabase.getEvent(dateProvider.getDateID(nextDate)),
+                        holiday?.description ?: ""
+                    )
+                )
+            }
+            dayList.clear()
+            dayList.addAll(days)
         }
     }
 
@@ -61,7 +122,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
     }
 
     fun addTodoList(){
-        val event = TodoEvent(
+        val event = Event(
             dateProvider.getDateToString(selectedDate.value),
             Type.DAY,
             "",
@@ -78,7 +139,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
         }
     }
 
-    fun deleteTodo(todo: TodoEvent){
+    fun deleteTodo(todo: Event){
         viewModelScope.launch(Dispatchers.IO) {
             jobDatabase.deletedEvent(todo)
             todoDTOList.clear()
@@ -101,13 +162,15 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
                     set(Calendar.DATE, i)
                 }
                 val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
-                days.add(CalendarDate(
+                days.add(
+                    CalendarDate(
                     date,
                     dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
                     jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
-                ))
+                )
+                )
             }
 
             for (i in 1 .. currDate.value.getActualMaximum(Calendar.DAY_OF_MONTH)){
@@ -116,13 +179,15 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
                     set(Calendar.DATE, i)
                 }
                 val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
-                days.add(CalendarDate(
+                days.add(
+                    CalendarDate(
                     date,
                     dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
                     jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
-                ))
+                )
+                )
             }
 
             val nextDate = currDate.value.clone() as Calendar
@@ -136,13 +201,15 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO, private val j
                     set(Calendar.DATE, i)
                 }
                 val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateID(date))
-                days.add(CalendarDate(
+                days.add(
+                    CalendarDate(
                     date,
                     dateProvider.getDateID(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
                     jobDatabase.getEvent(dateProvider.getDateID(date)),
                     holiday?.description ?: ""
-                ))
+                )
+                )
             }
             dayList.clear()
             dayList.addAll(days)

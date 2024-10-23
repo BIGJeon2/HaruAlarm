@@ -1,4 +1,4 @@
-package com.jeon.harualarm.api
+package com.jeon.harualarm.api.client
 
 import com.jeon.harualarm.api.keys.WeatherAPIKEY
 import com.jeon.harualarm.database.Weather
@@ -6,7 +6,7 @@ import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface WeatherAPI {
+interface WeatherService {
     @GET("getVilageFcst?serviceKey=${WeatherAPIKEY.ENCODING_KEY}")
     suspend fun getWeather(
         @Query("dataType") dataType : String,

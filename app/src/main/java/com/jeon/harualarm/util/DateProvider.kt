@@ -1,10 +1,7 @@
 package com.jeon.harualarm.util
 
 import android.annotation.SuppressLint
-import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.database.model.DTO.CalendarDate
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale

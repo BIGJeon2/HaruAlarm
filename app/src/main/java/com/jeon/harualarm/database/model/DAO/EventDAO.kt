@@ -5,21 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.jeon.harualarm.database.model.DTO.TodoEvent
-import retrofit2.http.GET
+import com.jeon.harualarm.database.model.DTO.Event
 
 @Dao
 interface EventDAO {
     @Insert
-    suspend fun insertEvent(event: TodoEvent)
+    suspend fun insertEvent(event: Event)
 
     @Delete
-    suspend fun deletedEvent(event: TodoEvent)
+    suspend fun deletedEvent(event: Event)
 
     @Update
-    suspend fun updateEvent(event: TodoEvent)
+    suspend fun updateEvent(event: Event)
 
     @Query("SELECT * FROM todo_event_table WHERE date_id = :dateID")
-    suspend fun getEvent(dateID: String): List<TodoEvent>
+    suspend fun getEvent(dateID: String): List<Event>
 
 }

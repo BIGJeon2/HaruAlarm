@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -56,8 +55,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.jeon.harualarm.api.client.ApiServiceFactory
-import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.api.factory.ApiServiceFactory
+import com.jeon.harualarm.api.model.VO.DayType
 import com.jeon.harualarm.database.CalendarDatabase
 import com.jeon.harualarm.database.model.DTO.Holiday
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
@@ -83,7 +82,7 @@ class MainActivity : ComponentActivity() {
             if (holidayDatabase.getAllHolidaysCount() == 0){
                 for (year in 2003 .. 2026){
                     try {
-                        val client = ApiServiceFactory.holidayAPI
+                        val client = ApiServiceFactory.holidayService
                         val response = client.getHolidays(year).execute()
                         if (response.isSuccessful) {
                             val items =  response.body()?.response?.body?.items?.item

@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.jeon.harualarm.database.model.DTO.Holiday
-import com.jeon.harualarm.database.model.DTO.TodoEvent
 
 @Dao
 interface HolidayDAO {

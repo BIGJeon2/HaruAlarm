@@ -1,13 +1,11 @@
 package com.jeon.harualarm.viewmodels
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
-import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.database.model.DTO.CalendarDate
-import com.jeon.harualarm.database.model.DTO.Holiday
+import com.jeon.harualarm.api.model.VO.DayType
+import com.jeon.harualarm.model.DTO.CalendarDate
 import com.jeon.harualarm.util.DateProvider
 import java.util.Calendar
 

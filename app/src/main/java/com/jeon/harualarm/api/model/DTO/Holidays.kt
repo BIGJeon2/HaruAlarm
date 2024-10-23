@@ -1,7 +1,5 @@
-package com.jeon.harualarm.api.model
+package com.jeon.harualarm.api.model.DTO
 
-
-import com.google.gson.annotations.SerializedName
 
 data class Holidays(
     val response: Response = Response()

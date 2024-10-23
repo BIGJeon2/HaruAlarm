@@ -4,10 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.jeon.harualarm.database.model.VO.Type
-import java.util.Calendar
 
 @Entity(tableName = "todo_event_table")
-data class TodoEvent(
+data class Event(
     @ColumnInfo(name = "title")
     var title: String,
     @ColumnInfo(name = "type")
