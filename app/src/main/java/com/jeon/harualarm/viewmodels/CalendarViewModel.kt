@@ -1,105 +1,119 @@
 package com.jeon.harualarm.viewmodels
 
-import android.annotation.SuppressLint
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.harualarm.api.client.ApiServiceFactory
 import com.jeon.harualarm.api.model.DayType
+import com.jeon.harualarm.database.model.DAO.HolidayDAO
 import com.jeon.harualarm.database.model.DTO.CalendarDate
+import com.jeon.harualarm.database.model.DTO.Holiday
 import com.jeon.harualarm.util.DateProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class CalendarViewModel(): ViewModel() {
+class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel() {
     private val dateProvider = DateProvider()
-    var currDate = mutableStateOf(Calendar.getInstance())
+    var currDate = mutableStateOf(Calendar.getInstance().apply {
+        set(Calendar.DATE, 1)
+    })
         private set
     var selectedDate = mutableStateOf(Calendar.getInstance())
-    var previousMonthDays = SnapshotStateList<CalendarDate>()
     var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    var nextMonthDays = SnapshotStateList<CalendarDate>()
+    private lateinit var holidays: List<Holiday>
 
     init {
-        loadMonthDate()
-        setDayList()
-    }
-
-    private fun loadMonthDate(){
-        val previousDate = Calendar.getInstance().apply {
-            time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
-            add(Calendar.MONTH, 1)
-            set(Calendar.DATE, 1)
+        viewModelScope.launch(Dispatchers.IO) {
+            getHoliday()
+            setDayList()
         }
-
-        val nextDate = Calendar.getInstance().apply {
-            time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
-            add(Calendar.MONTH, -1)
-            set(Calendar.DATE, 1)
-        }
-
-        previousMonthDays.addAll(dateProvider.getDaysList(previousDate))
-        dayList.addAll(dateProvider.getDaysList(nextDate))
-        nextMonthDays.addAll(dateProvider.getDaysList(currDate.value))
     }
 
     fun setNextMonth() {
-        val newDate = Calendar.getInstance().apply {
-            time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
-            add(Calendar.MONTH, 1)
+        val newDate = currDate.value.clone() as Calendar
+        newDate.apply {
             set(Calendar.DATE, 1)
+            add(Calendar.MONTH, 1)
         }
         currDate.value = newDate
-        setDayList() // 날짜 리스트 업데이트
+        setDayList()
     }
 
     fun setBeforeMonth() {
-        val newDate = Calendar.getInstance().apply {
-            time = currDate.value.time // 현재 선택된 날짜를 기반으로 새로운 달 계산
-            add(Calendar.MONTH, -1)
+        val newDate = currDate.value.clone() as Calendar
+        newDate.apply {
             set(Calendar.DATE, 1)
+            add(Calendar.MONTH, -1)
         }
         currDate.value = newDate
-        setDayList() // 날짜 리스트 업데이트
+        setDayList()
     }
 
     fun setSelectedDate(date: Calendar) {
         selectedDate.value = date
     }
 
-    private fun setDayList() {
+    private fun setDayList(){
         dayList.clear()
-        setHolidays(dateProvider.getDaysList(currDate.value))
+        val days = ArrayList<CalendarDate>()
+        val beforeDate = currDate.value.clone() as Calendar
+        beforeDate.apply {
+            add(Calendar.MONTH, -1)
+        }
+        val beforeDaySize = currDate.value.get(Calendar.DAY_OF_WEEK) - 1
+        val maxOfBeforeDate = beforeDate.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in maxOfBeforeDate - beforeDaySize + 1  .. maxOfBeforeDate){
+            val date = beforeDate.clone() as Calendar
+            date.apply {
+                set(Calendar.DATE, i)
+            }
+            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
+            days.add(CalendarDate(
+                    date,
+                    dateProvider.getDateToString(date),
+                    if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                holiday?.description ?: ""
+            ))
+        }
+
+        for (i in 1 until currDate.value.get(Calendar.DAY_OF_MONTH)){
+            val date = currDate.value.clone() as Calendar
+            date.apply {
+                set(Calendar.DATE, i)
+            }
+            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
+            days.add(CalendarDate(
+                    date,
+                    dateProvider.getDateToString(date),
+                    if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                holiday?.description ?: ""
+            ))
+        }
+
+        val nextDate = currDate.value.clone() as Calendar
+        beforeDate.apply {
+            add(Calendar.MONTH, 1)
+        }
+
+        for (i in 1 .. 35 - dayList.size){
+            val date = nextDate.clone() as Calendar
+            date.apply {
+                set(Calendar.DATE, i)
+            }
+            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
+            days.add(CalendarDate(
+                date,
+                dateProvider.getDateToString(date),
+                if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                holiday?.description ?: ""
+            ))
+        }
+        dayList.addAll(days)
     }
 
-    @SuppressLint("DefaultLocale")
-    private fun setHolidays(days: List<CalendarDate>) {
-        val year = currDate.value.get(Calendar.YEAR)
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val client = ApiServiceFactory.holidayAPI
-                val response = client.getHolidays(year).execute()
-                if (response.isSuccessful) {
-                    response.body()?.response?.body?.items?.item?.forEach { holiday ->
-                        days.find { it.date == holiday.locdate }?.let { day ->
-                            day.type = DayType.HOLIDAY
-                            day.description = holiday.dateName
-                        }
-                    }
-                    withContext(Dispatchers.Main){
-                        dayList.clear()
-                        dayList.addAll(days)
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                dayList.addAll(days)
-            }
-        }
+    private suspend fun getHoliday() {
+        holidays = holidayRepository.getAllHolidays()
     }
 }

@@ -47,6 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
+import com.jeon.harualarm.api.client.ApiServiceFactory
+import com.jeon.harualarm.database.CalendarDatabase
+import com.jeon.harualarm.database.model.DTO.Holiday
 import com.jeon.harualarm.ui.CalendarPreview
 import com.jeon.harualarm.ui.CalendarScreen
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
@@ -56,21 +59,50 @@ import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import com.jeon.harualarm.viewmodels.JobsScreenViewModel
 import com.jeon.harualarm.viewmodels.MainViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Dispatcher
 import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val calendarViewModel = ViewModelProvider(this, MainViewModelFactory(application))[CalendarViewModel::class.java]
+        val jobsViewModel = ViewModelProvider(this, MainViewModelFactory(application))[JobsScreenViewModel::class.java]
+        val holidayDatabase = CalendarDatabase.getDatabase(applicationContext).holidayDao()
+        CoroutineScope(Dispatchers.IO).launch {
+            if (holidayDatabase.getAllHolidaysCount() == 0){
+                for (year in 2003 .. 2026){
+                    try {
+                        val client = ApiServiceFactory.holidayAPI
+                        val response = client.getHolidays(year).execute()
+                        if (response.isSuccessful) {
+                            val items =  response.body()?.response?.body?.items?.item
+                            val holidays = ArrayList<Holiday>()
+                            if (items != null) {
+                                for (i in items){
+                                    if (i.isHoliday == "Y"){
+                                        holidays.add(Holiday(year, i.locdate, i.dateName))
+                                    }
+                                }
+                            }
+                            holidayDatabase.insertAllHolidays(holidays)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
         enableEdgeToEdge()
         setContent {
-            val calendarViewModel = ViewModelProvider(this, MainViewModelFactory(application))[CalendarViewModel::class.java]
-            val jobsViewModel = ViewModelProvider(this, MainViewModelFactory(application))[JobsScreenViewModel::class.java]
             HaruAlarmTheme {
                 Column(
                     modifier = Modifier.background(MainColor)
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
-                    CalendarScreen().CalendarView(calendarViewModel)
+                    CalendarScreen().CalendarView(holidayDatabase, calendarViewModel)
                     TodoListContainer(jobsViewModel)
                 }
             }
@@ -78,7 +110,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @SuppressLint("AutoboxingStateCreation")
 @Composable
 fun TodoListContainer(viewModel: JobsScreenViewModel) {

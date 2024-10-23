@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,18 +31,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jeon.harualarm.api.model.DayType
-import com.jeon.harualarm.database.CalendarDatabase
+import com.jeon.harualarm.database.model.DAO.HolidayDAO
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import java.util.Calendar
-import java.util.Date
 import kotlin.math.abs
+
 
 class CalendarScreen() {
     @Composable
-    fun CalendarView(calendarDB: CalendarDatabase, viewmodel: CalendarViewModel) {
+    fun CalendarView(holidayDB: HolidayDAO, viewmodel: CalendarViewModel) {
         var startX by remember { mutableFloatStateOf(0f)}
         var endX by remember { mutableFloatStateOf(0f) }
         Column(
@@ -74,7 +75,7 @@ class CalendarScreen() {
             Column(modifier = Modifier.padding(6.dp)) {
                 CalendarHeader(viewmodel)
                 CalendarDayName()
-                CalendarDayList(calendarDB, viewmodel)
+                CalendarDayList(viewmodel)
             }
         }
     }
@@ -90,41 +91,59 @@ class CalendarScreen() {
         val currMonth = DateProvider().getMonthToString(selectedDate.time)
         val selectedYear = Calendar.getInstance().apply { time = selectedDate.time }.get(Calendar.YEAR)
 
+        // 현재 연도와 선택된 연도 비교
+        val displayText = if (currentYear != selectedYear) {
+            "${selectedYear}.${currMonth} " // 연도 포함
+        } else {
+            currMonth // 연도 제외
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = DateProvider().getBeforeMonth(selectedDate.time),
-                fontSize = 12.sp,
-                color = Color.Gray,
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Start
-            )
-
-            // 현재 연도와 선택된 연도 비교
-            val displayText = if (currentYear != selectedYear) {
-                "${selectedYear}.${currMonth} " // 연도 포함
-            } else {
-                currMonth // 연도 제외
+            TextButton(
+                onClick = {
+                    viewmodel.setBeforeMonth()
+                }
+            ){
+                Text(
+                    text = DateProvider().getBeforeMonth(selectedDate.time),
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Start
+                )
             }
 
-            Text(
-                text = displayText,
-                fontSize = 24.sp,
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Start
-            )
+            TextButton(
+                onClick = {
+                    //viewmodel.setBeforeMonth()
+                }
+            ){
+                Text(
+                    text = displayText,
+                    fontSize = 24.sp,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Start
+                )
+            }
 
-            Text(
-                text = nextMonth,
-                fontSize = 12.sp,
-                color = Color.Gray,
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Start
-            )
+            TextButton(
+                onClick = {
+                    viewmodel.setNextMonth()
+                }
+            ){
+                Text(
+                    text = nextMonth,
+                    fontSize = 12.sp,
+                    color = Color.Gray,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Start,
+                )
+            }
         }
     }
 
@@ -145,7 +164,7 @@ class CalendarScreen() {
                 ) {
                     Text(
                         text = it,
-                        fontSize = 16.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
                 }
@@ -154,8 +173,7 @@ class CalendarScreen() {
     }
 
     @Composable
-    private fun CalendarDayList(calendarDB: CalendarDatabase, viewmodel: CalendarViewModel) {
-        val db = calendarDB.holidayDao()
+    private fun CalendarDayList(viewmodel: CalendarViewModel) {
         // ViewModel에서 날짜 리스트 가져오기
         val days = viewmodel.dayList
         val today = Calendar.getInstance() // 오늘 날짜 가져오기
@@ -174,27 +192,18 @@ class CalendarScreen() {
                         val index = week * 7 + day
                         if (index < days.size) {
                             val displayDay = days[index]
-                            val textColor = if (DateProvider().getDateToString(Calendar.getInstance()) == displayDay.date) Color.Cyan else {
-                                if(displayDay.type != DayType.WEEKDAY){
-                                    Color.Red
-                                }else{
-                                    Color.Black
-                                }
-                            }
                             val backgroundColor = if (viewmodel.selectedDate.value == displayDay.calendarDate) MainColor else Color.White
-                            val calendar = Calendar.getInstance().apply { time = displayDay.calendarDate.time }
-
-                            if (calendar.get(Calendar.DAY_OF_MONTH) == 1) {
+                            if (displayDay.calendarDate.get(Calendar.DAY_OF_MONTH) == 1) {
                                 isCurrentMonth = !isCurrentMonth
                             }
 
                             // 오늘 날짜와 비교하여 텍스트 색상 설정
-                            val todayTextColor = if (DateProvider().getDateToString(calendar) == DateProvider().getDateToString(today)) {
+                            val todayTextColor = if (displayDay.date == DateProvider().getDateToString(today)) {
                                 Color.Cyan // 오늘 날짜의 텍스트 색상
                             } else {
-                                if (days[index].type != DayType.WEEKDAY){
+                                if (days[index].type == DayType.WEEKDAY){
                                     // 기본 텍스트 색상
-                                    textColor
+                                    Color.Black
                                 }else{
                                     Color.Red
                                 }
@@ -203,23 +212,36 @@ class CalendarScreen() {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .aspectRatio(1f)
-                                    .padding(2.dp)
+                                    .aspectRatio(0.6f)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(backgroundColor),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.TopCenter
                             ) {
                                 Column {
                                     TextButton(
                                         onClick = {
                                             viewmodel.setSelectedDate(displayDay.calendarDate)
                                         },
+                                        modifier = Modifier.fillMaxSize()
                                     ) {
-                                        Text(
-                                            text = displayDay.calendarDate.get(Calendar.DAY_OF_MONTH).toString(),
-                                            color = todayTextColor,
-                                            fontSize = 12.sp,
-                                        )
+                                        Column(
+                                            Modifier.fillMaxSize(),
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = displayDay.calendarDate.get(Calendar.DAY_OF_MONTH).toString(),
+                                                color = todayTextColor,
+                                                fontSize = 10.sp,
+                                            )
+                                            Text(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                text = displayDay.description,
+                                                maxLines = 1,
+                                                color = todayTextColor,
+                                                fontSize = 10.sp,
+                                            )
+                                        }
                                     }
                                 }
                             }

@@ -9,7 +9,7 @@ class MainViewModelFactory(private val application: Application): ViewModelProvi
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CalendarViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return CalendarViewModel() as T
+            return CalendarViewModel(CalendarDatabase.getDatabase(application).holidayDao()) as T
         }else if (modelClass.isAssignableFrom(JobsScreenViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
             return JobsScreenViewModel(application) as T
