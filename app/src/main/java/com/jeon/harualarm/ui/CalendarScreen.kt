@@ -196,7 +196,7 @@ class CalendarScreen() {
                         val index = week * 7 + day
                         if (index < days.size) {
                             val displayDay = days[index]
-                            val backgroundColor = if (viewmodel.selectedDate.value == displayDay.calendarDate) MainColor else Color.White
+                            val backgroundColor = if (DateProvider().getDateToString(viewmodel.selectedDate.value) == displayDay.date) MainColor else Color.White
                             if (displayDay.calendarDate.get(Calendar.DAY_OF_MONTH) == 1) {
                                 isCurrentMonth = !isCurrentMonth
                             }
@@ -220,7 +220,7 @@ class CalendarScreen() {
                                     .padding(2.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(backgroundColor),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.TopCenter
                             ) {
                                 Column {
                                     TextButton(
@@ -233,7 +233,6 @@ class CalendarScreen() {
                                         contentPadding = PaddingValues(2.dp)
                                     ) {
                                         Column(
-                                            Modifier.fillMaxSize(),
                                             verticalArrangement = Arrangement.SpaceAround,
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {

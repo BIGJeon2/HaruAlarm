@@ -77,7 +77,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
             ))
         }
 
-        for (i in 1 until currDate.value.get(Calendar.DAY_OF_MONTH)){
+        for (i in 1 .. currDate.value.getActualMaximum(Calendar.DAY_OF_MONTH)){
             val date = currDate.value.clone() as Calendar
             date.apply {
                 set(Calendar.DATE, i)
@@ -96,7 +96,7 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
             add(Calendar.MONTH, 1)
         }
 
-        for (i in 1 .. 35 - dayList.size){
+        for (i in 1 ..  35 - days.size){
             val date = nextDate.clone() as Calendar
             date.apply {
                 set(Calendar.DATE, i)
