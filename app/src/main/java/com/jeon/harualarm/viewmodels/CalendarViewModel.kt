@@ -21,11 +21,9 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
     })
     override var selectedDate = mutableStateOf(Calendar.getInstance())
     override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    override lateinit var holidays: List<Holiday>
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            getHoliday()
             setDayList()
         }
     }
@@ -55,64 +53,62 @@ class CalendarViewModel(private val holidayRepository: HolidayDAO): ViewModel(),
     }
 
     override fun setDayList(){
-        dayList.clear()
-        val days = ArrayList<CalendarDate>()
-        val beforeDate = currDate.value.clone() as Calendar
-        beforeDate.apply {
-            add(Calendar.MONTH, -1)
-        }
-        val beforeDaySize = currDate.value.get(Calendar.DAY_OF_WEEK) - 1
-        val maxOfBeforeDate = beforeDate.getActualMaximum(Calendar.DAY_OF_MONTH)
-        for (i in maxOfBeforeDate - beforeDaySize + 1  .. maxOfBeforeDate){
-            val date = beforeDate.clone() as Calendar
-            date.apply {
-                set(Calendar.DATE, i)
+        viewModelScope.launch(Dispatchers.IO) {
+            val days = ArrayList<CalendarDate>()
+            val beforeDate = currDate.value.clone() as Calendar
+            beforeDate.apply {
+                add(Calendar.MONTH, -1)
             }
-            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
-            days.add(CalendarDate(
+            val beforeDaySize = currDate.value.get(Calendar.DAY_OF_WEEK) - 1
+            val maxOfBeforeDate = beforeDate.getActualMaximum(Calendar.DAY_OF_MONTH)
+            for (i in maxOfBeforeDate - beforeDaySize + 1  .. maxOfBeforeDate){
+                val date = beforeDate.clone() as Calendar
+                date.apply {
+                    set(Calendar.DATE, i)
+                }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                days.add(CalendarDate(
                     date,
                     dateProvider.getDateToString(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
-                holiday?.description ?: ""
-            ))
-        }
-
-        for (i in 1 .. currDate.value.getActualMaximum(Calendar.DAY_OF_MONTH)){
-            val date = currDate.value.clone() as Calendar
-            date.apply {
-                set(Calendar.DATE, i)
+                    holiday?.description ?: ""
+                ))
             }
-            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
-            days.add(CalendarDate(
+
+            for (i in 1 .. currDate.value.getActualMaximum(Calendar.DAY_OF_MONTH)){
+                val date = currDate.value.clone() as Calendar
+                date.apply {
+                    set(Calendar.DATE, i)
+                }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                days.add(CalendarDate(
                     date,
                     dateProvider.getDateToString(date),
                     if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
-                holiday?.description ?: ""
-            ))
-        }
-
-        val nextDate = currDate.value.clone() as Calendar
-        beforeDate.apply {
-            add(Calendar.MONTH, 1)
-        }
-
-        for (i in 1 ..  35 - days.size){
-            val date = nextDate.clone() as Calendar
-            date.apply {
-                set(Calendar.DATE, i)
+                    holiday?.description ?: ""
+                ))
             }
-            val holiday = holidays.find { it.date == dateProvider.getDateToString(date) }
-            days.add(CalendarDate(
-                date,
-                dateProvider.getDateToString(date),
-                if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
-                holiday?.description ?: ""
-            ))
-        }
-        dayList.addAll(days)
-    }
 
-    override suspend fun getHoliday() {
-        holidays = holidayRepository.getAllHolidays()
+            val nextDate = currDate.value.clone() as Calendar
+            beforeDate.apply {
+                add(Calendar.MONTH, 1)
+            }
+
+            for (i in 1 ..  35 - days.size){
+                val date = nextDate.clone() as Calendar
+                date.apply {
+                    set(Calendar.DATE, i)
+                }
+                val holiday: Holiday? = holidayRepository.getHoliday(dateProvider.getDateToString(date))
+                days.add(CalendarDate(
+                    date,
+                    dateProvider.getDateToString(date),
+                    if (date[7] == 1 || date[7] == 7 || holiday != null) DayType.WEEKEND else DayType.WEEKDAY,
+                    holiday?.description ?: ""
+                ))
+            }
+            dayList.clear()
+            dayList.addAll(days)
+        }
     }
 }

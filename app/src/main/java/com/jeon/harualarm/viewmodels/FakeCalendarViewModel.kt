@@ -18,7 +18,6 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
     })
     override var selectedDate = mutableStateOf(Calendar.getInstance())
     override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    override lateinit var holidays: List<Holiday>
 
     init {
         for (i in 1 until 35){
@@ -46,10 +45,6 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
     }
 
     override fun setDayList() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getHoliday() {
         TODO("Not yet implemented")
     }
 

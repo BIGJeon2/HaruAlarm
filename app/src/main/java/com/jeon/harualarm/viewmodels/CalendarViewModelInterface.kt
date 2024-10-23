@@ -14,10 +14,8 @@ interface CalendarViewModelInterface {
     var currDate: MutableState<Calendar>
     var selectedDate: MutableState<Calendar>
     var dayList: SnapshotStateList<CalendarDate>
-    var holidays: List<Holiday>
     fun setNextMonth()
     fun setBeforeMonth()
     fun setSelectedDate(date: Calendar)
     fun setDayList()
-    suspend fun getHoliday()
 }
