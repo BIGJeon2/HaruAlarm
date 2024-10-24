@@ -62,6 +62,7 @@ import com.jeon.harualarm.database.model.DTO.Holiday
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
+import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import com.jeon.harualarm.viewmodels.CalendarViewModelInterface
@@ -158,21 +159,13 @@ fun CalendarView(viewmodel: CalendarViewModelInterface) {
 
 @Composable
 private fun CalendarHeader(viewmodel: CalendarViewModelInterface) {
-    // selectedDate를 State로 관찰
+    val dateProvider = DateProvider()
+    val dateConverter = DateConverter()
     val selectedDate = viewmodel.currDate.value
-    val currentYear = Calendar.getInstance().get(Calendar.YEAR) // 현재 연도 가져오기
-
-    // 이전 및 다음 달 계산
-    val nextMonth = DateProvider().getNextMonth(selectedDate.time)
-    val currMonth = DateProvider().getMonthToString(selectedDate.time)
-    val selectedYear = Calendar.getInstance().apply { time = selectedDate.time }.get(Calendar.YEAR)
-
-    // 현재 연도와 선택된 연도 비교
-    val displayText = if (currentYear != selectedYear) {
-        "${selectedYear}.${currMonth} " // 연도 포함
-    } else {
-        currMonth // 연도 제외
-    }
+    val beforeMonth = dateConverter.getMonth(dateProvider.getBeforeMonth(selectedDate))
+    val nextMonth = dateConverter.getMonth(dateProvider.getNextMonth(selectedDate))
+    val currMonth = dateConverter.getMonth(selectedDate)
+    val isCurrYear = dateConverter.getYear(selectedDate) == dateConverter.getYear(Calendar.getInstance())
 
     Row(
         modifier = Modifier
@@ -186,7 +179,7 @@ private fun CalendarHeader(viewmodel: CalendarViewModelInterface) {
             }
         ){
             Text(
-                text = DateProvider().getBeforeMonth(selectedDate.time),
+                text = "$beforeMonth",
                 fontSize = 12.sp,
                 color = Color.Gray,
                 fontStyle = FontStyle.Normal,
@@ -200,10 +193,10 @@ private fun CalendarHeader(viewmodel: CalendarViewModelInterface) {
             }
         ){
             Text(
-                text = displayText,
+                text = if (isCurrYear) { currMonth.toString() } else { "${dateConverter.getYear(selectedDate)}.${currMonth}" },
                 fontSize = 24.sp,
                 fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Center
             )
         }
 
@@ -213,7 +206,7 @@ private fun CalendarHeader(viewmodel: CalendarViewModelInterface) {
             }
         ){
             Text(
-                text = nextMonth,
+                text = "$nextMonth",
                 fontSize = 12.sp,
                 color = Color.Gray,
                 fontStyle = FontStyle.Normal,
@@ -250,7 +243,7 @@ private fun CalendarDayName(){
 
 @Composable
 private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
-    // ViewModel에서 날짜 리스트 가져오기
+    val dateConverter = DateConverter()
     val days = viewmodel.dayList
     val today = Calendar.getInstance() // 오늘 날짜 가져오기
     Column(
@@ -268,13 +261,14 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                     val index = week * 7 + day
                     if (index < days.size) {
                         val displayDay = days[index]
-                        val backgroundColor = if (DateProvider().getDateToString(viewmodel.selectedDate.value) == displayDay.date) MainColor else Color.White
+                        val isSelectedDate = dateConverter.dateID(viewmodel.selectedDate.value) == displayDay.date
+                        val backgroundColor = if (isSelectedDate) MainColor else Color.White
                         if (displayDay.calendarDate.get(Calendar.DAY_OF_MONTH) == 1) {
                             isCurrentMonth = !isCurrentMonth
                         }
 
                         // 오늘 날짜와 비교하여 텍스트 색상 설정
-                        val todayTextColor = if (displayDay.date == DateProvider().getDateToString(today)) {
+                        val todayTextColor = if (displayDay.date == dateConverter.dateID(today)) {
                             Color.Cyan // 오늘 날짜의 텍스트 색상
                         } else {
                             if (days[index].type == DayType.WEEKDAY){
@@ -284,7 +278,7 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                                 Color.Red
                             }
                         }
-                        val todoText = displayDay.todos.size
+                        val todoText = if (isSelectedDate) viewmodel.todoList.size else displayDay.todos.size
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -390,7 +384,7 @@ fun CardBox(content: String) {
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 fun AlarmCard(viewModel: CalendarViewModel) {
-    val alarmList = viewModel.todoDTOList
+    val alarmList = viewModel.todoList
     Column(
         modifier = Modifier
             .fillMaxSize()

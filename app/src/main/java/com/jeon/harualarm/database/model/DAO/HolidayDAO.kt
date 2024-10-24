@@ -17,7 +17,7 @@ interface HolidayDAO {
     suspend fun insertAllHolidays(holidayList: List<Holiday>)
 
     @Query("SELECT * FROM holidays")
-    suspend fun getAllHolidays(): List<Holiday>
+    suspend fun getAllHolidays(): List<Holiday>?
 
     @Query("SELECT COUNT(*) FROM holidays")
     suspend fun getAllHolidaysCount(): Int
@@ -29,6 +29,6 @@ interface HolidayDAO {
     suspend fun updateEvent(holiday: Holiday)
 
     @Query("SELECT * FROM holidays WHERE date = :date")
-    suspend fun getHoliday(date: String): Holiday
+    suspend fun getHoliday(date: String): Holiday?
 
 }

@@ -8,40 +8,31 @@ import java.util.Locale
 
 class DateProvider {
     
-    fun getBeforeMonth(date: Date): String {
-        val newDate = Calendar.getInstance().apply {
-            time = date // Date 객체를 Calendar에 설정
-            add(Calendar.MONTH, -1) // 한 달 전으로 계산
-        }
-        return getMonthToString(newDate.time) // Calendar에서 Date로 변환
+    fun getBeforeMonth(calendar: Calendar): Calendar {
+        return (calendar.clone() as Calendar).apply { add(Calendar.MONTH, -1) }
     }
 
-    fun getNextMonth(date: Date): String {
-        val newDate = Calendar.getInstance().apply {
-            time = date // Date 객체를 Calendar에 설정
-            add(Calendar.MONTH, 1) // 한 달 후로 계산
-        }
-        return getMonthToString(newDate.time) // Calendar에서 Date로 변환
+    fun getNextMonth(calendar: Calendar): Calendar {
+        return (calendar.clone() as Calendar).apply { add(Calendar.MONTH, 1) }
     }
 
-    fun getYearToString(date: Date): String {
-        return SimpleDateFormat("yyyy", Locale.KOREA).format(date)
+    fun getMonthDayList(calendar: Calendar): ArrayList<Calendar>{
+        val days = ArrayList<Calendar>()
+        val daySize = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        for (i in 1 .. daySize) {
+            days.add((calendar.clone() as Calendar).apply {
+                set(Calendar.DATE, i)
+            })
+        }
+        return days
     }
 
     fun getMonthToString(date: Date): String {
         return SimpleDateFormat("MM", Locale.KOREA).format(date)
     }
 
-    fun getDayToString(date: Date): String {
-        return SimpleDateFormat("dd", Locale.KOREA).format(date)
-    }
-
-    fun getFullDateToString(date: Date): String {
-        return SimpleDateFormat("yyyyMMdd", Locale.KOREA).format(date)
-    }
-
     @SuppressLint("DefaultLocale")
-    fun getDateID(date: Calendar): String{
+    fun dateID(date: Calendar): String{
         val dateFormatted = String.format(
             "%04d%02d%02d",
             date.get(Calendar.YEAR),
@@ -51,18 +42,6 @@ class DateProvider {
         return dateFormatted
     }
 
-    @SuppressLint("DefaultLocale")
-    fun getDateToString(date: Calendar): String{
-        val dateFormatted = String.format(
-            "%04d%02d%02d%2d%2d",
-            date.get(Calendar.YEAR),
-            date.get(Calendar.MONTH) + 1, // MONTH는 0부터 시작하므로 1을 더함
-            date.get(Calendar.DAY_OF_MONTH),
-            date.get(Calendar.HOUR_OF_DAY),
-            date.get(Calendar.MINUTE)
-        )
-        return dateFormatted
-    }
 
     @SuppressLint("DefaultLocale")
     fun getStringToCalendar(dateString: String): Calendar {
