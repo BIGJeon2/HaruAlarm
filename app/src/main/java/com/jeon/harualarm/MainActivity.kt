@@ -294,28 +294,30 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                                         viewmodel.setSelectedDate(displayDay.calendarDate)
                                     },
                                     shape = RoundedCornerShape(10.dp),
-                                    modifier = Modifier
-                                        .fillMaxSize(),
+                                    modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(2.dp)
                                 ) {
                                     Column(
-                                        verticalArrangement = Arrangement.SpaceAround,
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                        modifier = Modifier.fillMaxSize(),
+                                        verticalArrangement = Arrangement.Top,
+                                        horizontalAlignment = Alignment.CenterHorizontally,
                                     ) {
                                         Text(
                                             text = displayDay.calendarDate.get(Calendar.DAY_OF_MONTH).toString(),
                                             color = todayTextColor,
                                             fontSize = 10.sp,
                                         )
+                                        if (displayDay.type != DayType.WEEKDAY){
+                                            Text(
+                                                text = displayDay.description,
+                                                maxLines = 1,
+                                                color = todayTextColor,
+                                                fontSize = 10.sp,
+                                            )
+                                        }
                                         Text(
                                             text = if (todoText != 0) "+$todoText" else "",
                                             color = Color.Blue,
-                                            fontSize = 10.sp,
-                                        )
-                                        Text(
-                                            text = displayDay.description,
-                                            maxLines = 1,
-                                            color = todayTextColor,
                                             fontSize = 10.sp,
                                         )
                                     }
