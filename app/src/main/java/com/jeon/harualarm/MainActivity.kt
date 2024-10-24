@@ -1,16 +1,9 @@
 package com.jeon.harualarm
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -24,13 +17,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -111,7 +99,6 @@ class MainActivity : ComponentActivity() {
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
                     CalendarView(calendarViewModel)
-                    TodoListContainer(calendarViewModel)
                 }
             }
         }
@@ -151,6 +138,10 @@ fun CalendarView(viewmodel: CalendarViewModelInterface) {
     ) {
         Column(modifier = Modifier.padding(6.dp)) {
             CalendarHeader(viewmodel)
+            HorizontalDivider(
+                thickness = 2.dp,
+                color = Color.LightGray
+            )
             CalendarDayName()
             CalendarDayList(viewmodel)
         }
@@ -189,7 +180,7 @@ private fun CalendarHeader(viewmodel: CalendarViewModelInterface) {
 
         TextButton(
             onClick = {
-                //viewmodel.setBeforeMonth()
+
             }
         ){
             Text(
@@ -251,8 +242,6 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
             .background(Color.Transparent)
             .padding(top = 12.dp)
     ) {
-        // 5주로 최대 설정
-        var isCurrentMonth = false
         repeat(5) { week ->
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -261,24 +250,12 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                     val index = week * 7 + day
                     if (index < days.size) {
                         val displayDay = days[index]
-                        val isSelectedDate = dateConverter.dateID(viewmodel.selectedDate.value) == displayDay.date
-                        val backgroundColor = if (isSelectedDate) MainColor else Color.White
-                        if (displayDay.calendarDate.get(Calendar.DAY_OF_MONTH) == 1) {
-                            isCurrentMonth = !isCurrentMonth
-                        }
-
-                        // 오늘 날짜와 비교하여 텍스트 색상 설정
-                        val todayTextColor = if (displayDay.date == dateConverter.dateID(today)) {
-                            Color.Cyan // 오늘 날짜의 텍스트 색상
-                        } else {
-                            if (days[index].type == DayType.WEEKDAY){
-                                // 기본 텍스트 색상
-                                Color.Black
-                            }else{
-                                Color.Red
-                            }
-                        }
-                        val todoText = if (isSelectedDate) viewmodel.todoList.size else displayDay.todos.size
+                        val isToday = displayDay.dateID == dateConverter.dateID(today)
+                        val backgroundColor = if (isToday) MainColor else Color.White
+                        val todayTextColor = if (days[index].type == DayType.WEEKDAY) Color.Black  else Color.Red
+                        val date = dateConverter.getDay(displayDay.calendarDate)
+                        val description = displayDay.description
+                        val todoText = if (displayDay.eventCount != 0) "+${displayDay.eventCount}" else ""
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -291,7 +268,7 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                             Column {
                                 TextButton(
                                     onClick = {
-                                        viewmodel.setSelectedDate(displayDay.calendarDate)
+
                                     },
                                     shape = RoundedCornerShape(10.dp),
                                     modifier = Modifier.fillMaxSize(),
@@ -303,20 +280,20 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                     ) {
                                         Text(
-                                            text = displayDay.calendarDate.get(Calendar.DAY_OF_MONTH).toString(),
+                                            text = "$date",
                                             color = todayTextColor,
                                             fontSize = 10.sp,
                                         )
                                         if (displayDay.type != DayType.WEEKDAY){
                                             Text(
-                                                text = displayDay.description,
+                                                text = description,
                                                 maxLines = 1,
                                                 color = todayTextColor,
                                                 fontSize = 10.sp,
                                             )
                                         }
                                         Text(
-                                            text = if (todoText != 0) "+$todoText" else "",
+                                            text = todoText,
                                             color = Color.Blue,
                                             fontSize = 10.sp,
                                         )
@@ -329,140 +306,6 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                     }
                 }
             }
-        }
-    }
-}
-
-@SuppressLint("AutoboxingStateCreation")
-@Composable
-fun TodoListContainer(viewModel: CalendarViewModel) {
-    val selectedIndex by remember { mutableStateOf(0) }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(Color.White),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .clip(RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center
-        ){
-            AnimatedContent(
-                targetState = selectedIndex,
-                transitionSpec = {
-                    (slideInHorizontally { width -> width } + fadeIn()).togetherWith(
-                        slideOutHorizontally { width -> -width } + fadeOut())
-                }, label = ""
-            ) { targetIndex ->
-                when (targetIndex) {
-                    0 -> AlarmCard(viewModel)
-                    1 -> CardBox(content = "Calendar Content")
-                    2 -> CardBox(content = "Settings Content")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CardBox(content: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = SecondaryColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
-        Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
-        Text(text = content, style = MaterialTheme.typography.headlineMedium, color = Color.Black)
-    }
-}
-
-@SuppressLint("MutableCollectionMutableState")
-@Composable
-fun AlarmCard(viewModel: CalendarViewModel) {
-    val alarmList = viewModel.todoList
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
-        ){
-            Text(
-                text = "일정",
-                style = MaterialTheme.typography.titleSmall,
-                color = Color.Black,
-            )
-            FloatingActionButton(
-                onClick = { viewModel.addTodoList()},
-                modifier = Modifier
-                    .size(40.dp, 40.dp)
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Add alarm button")
-            }
-        }
-
-        LazyColumn(
-            modifier = Modifier.padding(top = 12.dp)
-        ) {
-            items(alarmList) { alarm ->
-                AlarmItem(
-                    time = alarm.endDate,
-                    isEnabled = alarm.isAlarm,
-                    daysOfWeek = listOf("월", "화", "수", "목", "금")
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun AlarmItem(time: String, isEnabled: Boolean, daysOfWeek: List<String>) {
-    var alarmEnabled by remember { mutableStateOf(isEnabled) }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(MainColor)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "일과 목록 1",
-                fontSize = 16.sp,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black
-            )
-            Text(
-                text = time,
-                fontSize = 12.sp,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black
-            )
-            Switch(
-                checked = alarmEnabled,
-                onCheckedChange = { alarmEnabled = it },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color(0xFFA4E2A6),
-                    uncheckedThumbColor = Color(0xFF625b71)
-                )
-            )
         }
     }
 }

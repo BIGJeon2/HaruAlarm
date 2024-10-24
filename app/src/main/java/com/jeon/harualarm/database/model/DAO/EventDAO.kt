@@ -21,4 +21,6 @@ interface EventDAO {
     @Query("SELECT * FROM todo_event_table WHERE date_id = :dateID")
     suspend fun getEvent(dateID: String): List<Event>
 
+    @Query("SELECT COUNT(*) FROM todo_event_table WHERE date_id = :dateID")
+    suspend fun getEventSize(dateID: String): Int
 }

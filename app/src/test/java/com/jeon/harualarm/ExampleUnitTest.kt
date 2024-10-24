@@ -13,11 +13,7 @@ import java.util.Calendar
  */
 class ExampleUnitTest {
 
-    @Test
-    fun test_test(){
-        assertEquals(4, 2 + 4)
-    }
-
+    //달력 일자 불러 오기 기능 테스트
     @Test
     fun addition_isCorrect() {
         val dateProvider = DateProvider()

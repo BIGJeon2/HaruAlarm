@@ -7,8 +7,8 @@ import java.util.Calendar
 
 data class CalendarDate(
     val calendarDate: Calendar,
-    val date: String,
+    val dateID: String,
     var type: DayType,
-    var todos: List<Event>,
+    var eventCount: Int,
     var description: String
 )

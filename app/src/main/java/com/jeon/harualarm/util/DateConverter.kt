@@ -3,6 +3,7 @@ package com.jeon.harualarm.util
 import com.jeon.harualarm.model.DTO.Time
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class DateConverter {
@@ -20,6 +21,10 @@ class DateConverter {
 
     fun getYear(calendar: Calendar): Int {
         return calendar.get(Calendar.YEAR)
+    }
+
+    fun getDay(calendar: Calendar): Int{
+        return calendar.get(Calendar.DATE)
     }
 
     /**

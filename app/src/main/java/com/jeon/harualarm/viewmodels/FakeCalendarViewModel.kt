@@ -17,9 +17,7 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
     override var currDate = mutableStateOf(Calendar.getInstance().apply {
         set(Calendar.DATE, 1)
     })
-    override var selectedDate = mutableStateOf(Calendar.getInstance())
     override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    override var todoList: SnapshotStateList<Event> = mutableStateListOf()
 
     init {
         for (i in 1 until 35){
@@ -28,7 +26,7 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
                     Calendar.getInstance(),
                     "121212",
                     if (i == 1 || i == 7) DayType.HOLIDAY else DayType.WEEKDAY,
-                    listOf(),
+                    2,
                     "휴일입니다"
                 )
             )
@@ -40,10 +38,6 @@ class FakeCalendarViewModel() : ViewModel(), CalendarViewModelInterface {
     }
 
     override fun setBeforeMonth() {
-        TODO("Not yet implemented")
-    }
-
-    override fun setSelectedDate(date: Calendar) {
         TODO("Not yet implemented")
     }
 

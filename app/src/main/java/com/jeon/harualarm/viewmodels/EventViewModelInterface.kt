@@ -8,12 +8,13 @@ import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
 import java.util.Calendar
 
-interface CalendarViewModelInterface {
+interface EventViewModelInterface {
     var dateConverter: DateConverter
     var dateProvider: DateProvider
-    var currDate: MutableState<Calendar>
-    var dayList: SnapshotStateList<CalendarDate>
-    fun setNextMonth()
-    fun setBeforeMonth()
-    fun setDayList()
+    var date: MutableState<Calendar>
+    var eventList: SnapshotStateList<Event>
+    fun getEvent(date: Calendar)
+    fun addEvent(date: Calendar, event: Event)
+    fun deleteEvent(event: Event)
+    fun updateEvent(event: Event)
 }

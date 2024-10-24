@@ -27,10 +27,6 @@ class DateProvider {
         return days
     }
 
-    fun getMonthToString(date: Date): String {
-        return SimpleDateFormat("MM", Locale.KOREA).format(date)
-    }
-
     @SuppressLint("DefaultLocale")
     fun dateID(date: Calendar): String{
         val dateFormatted = String.format(
