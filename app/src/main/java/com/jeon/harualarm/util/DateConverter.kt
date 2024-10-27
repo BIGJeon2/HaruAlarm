@@ -1,6 +1,5 @@
 package com.jeon.harualarm.util
 
-import com.jeon.harualarm.model.DTO.Time
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

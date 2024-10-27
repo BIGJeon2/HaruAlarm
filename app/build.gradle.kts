@@ -55,6 +55,10 @@ dependencies {
 /*    val nav_version = "2.4.2"
     implementation("androidx.navigation:navigation-compose:$nav_version")*/
 
+    implementation(project(":model"))
+    implementation(project(":database"))
+    implementation(project(":api"))
+
     //Retrofit
     implementation(libs.retrofit.android)
     implementation(libs.retrofit.gsonconverter)
@@ -64,13 +68,13 @@ dependencies {
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.logging.interceptor)
 
-
     //Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
+
     ksp(libs.hilt.compiler)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)

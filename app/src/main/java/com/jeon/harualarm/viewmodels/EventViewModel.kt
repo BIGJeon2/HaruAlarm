@@ -4,20 +4,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.harualarm.database.model.DAO.EventDAO
-import com.jeon.harualarm.database.model.DTO.Event
-import com.jeon.harualarm.model.DTO.CalendarDate
+import com.jeon.database.DAO.TodoEventDao
+import com.jeon.database.Entity.TodoEvent
+import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
-class EventViewModel(private val eventRepository: EventDAO): ViewModel(), EventViewModelInterface {
+class EventViewModel(private val eventRepository: TodoEventRepository): ViewModel(), EventViewModelInterface {
     override var dateConverter = DateConverter()
     override var dateProvider = DateProvider()
     override var date = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
-    override var eventList = SnapshotStateList<Event>()
+    override var eventList = SnapshotStateList<TodoEvent>()
 
     fun setNextDate(){
         val newDate = (date.value.clone() as Calendar).apply {
@@ -36,25 +36,27 @@ class EventViewModel(private val eventRepository: EventDAO): ViewModel(), EventV
     override fun getEvent(date: Calendar) {
         viewModelScope.launch(Dispatchers.IO) {
             eventList.clear()
-            eventList.addAll(eventRepository.getEvent(dateConverter.dateID(date)))
+            eventRepository.getEventList(dateConverter.dateID(date)).collect{ event ->
+                eventList.addAll(event)
+            }
         }
     }
 
-    override fun addEvent(date: Calendar, event: Event) {
+    override fun addEvent(date: Calendar, event: TodoEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.insertEvent(event)
             eventList.add(event)
         }
     }
 
-    override fun deleteEvent(event: Event) {
+    override fun deleteEvent(event: TodoEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.deletedEvent(event)
             eventList.remove(event)
         }
     }
 
-    override fun updateEvent(event: Event) {
+    override fun updateEvent(event: TodoEvent) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.updateEvent(event)
         }

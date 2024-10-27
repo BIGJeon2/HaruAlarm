@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,16 +20,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,54 +39,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
-import com.jeon.harualarm.api.factory.ApiServiceFactory
-import com.jeon.harualarm.api.model.VO.DayType
-import com.jeon.harualarm.database.CalendarDatabase
-import com.jeon.harualarm.database.model.DTO.Holiday
+import com.jeon.model.VO.DayType
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
-import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
 import com.jeon.harualarm.viewmodels.CalendarViewModelInterface
 import com.jeon.harualarm.viewmodels.FakeCalendarViewModel
-import com.jeon.harualarm.viewmodels.MainViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.Calendar
 import kotlin.math.abs
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val calendarViewModel = ViewModelProvider(this, MainViewModelFactory(application))[CalendarViewModel::class.java]
-        val holidayDatabase = CalendarDatabase.getDatabase(applicationContext).holidayDao()
-        CoroutineScope(Dispatchers.IO).launch {
-            if (holidayDatabase.getAllHolidaysCount() == 0){
-                for (year in 2003 .. 2026){
-                    try {
-                        val client = ApiServiceFactory.holidayService
-                        val response = client.getHolidays(year).execute()
-                        if (response.isSuccessful) {
-                            val items =  response.body()?.response?.body?.items?.item
-                            val holidays = ArrayList<Holiday>()
-                            if (items != null) {
-                                for (i in items){
-                                    if (i.isHoliday == "Y"){
-                                        holidays.add(Holiday(year, i.locdate, i.dateName))
-                                    }
-                                }
-                            }
-                            holidayDatabase.insertAllHolidays(holidays)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
+        val calendarViewModel: CalendarViewModel by viewModels()
         enableEdgeToEdge()
         setContent {
             HaruAlarmTheme {
@@ -284,7 +248,7 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                                             color = todayTextColor,
                                             fontSize = 10.sp,
                                         )
-                                        if (displayDay.type != DayType.WEEKDAY){
+                                        if (displayDay.type != com.jeon.model.VO.DayType.WEEKDAY){
                                             Text(
                                                 text = description,
                                                 maxLines = 1,

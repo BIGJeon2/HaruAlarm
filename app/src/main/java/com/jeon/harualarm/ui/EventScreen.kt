@@ -38,14 +38,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jeon.harualarm.database.model.DAO.EventDAO
+import com.jeon.database.DAO.TodoEventDao
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.viewmodels.CalendarViewModel
-import com.jeon.harualarm.viewmodels.EventViewModel
 import com.jeon.harualarm.viewmodels.EventViewModelInterface
 
-class EventScreen(private val eventViewmodel: EventViewModelInterface, private val eventRepository: EventDAO) {
+class EventScreen(private val eventViewmodel: EventViewModelInterface, private val eventRepository: TodoEventDao) {
 
     @SuppressLint("AutoboxingStateCreation")
     @Composable
