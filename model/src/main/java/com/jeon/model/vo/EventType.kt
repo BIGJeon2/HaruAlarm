@@ -1,4 +1,4 @@
-package com.jeon.model.VO
+package com.jeon.model.vo
 
 enum class EventType {
     PERIOD, DAY, REPEAT

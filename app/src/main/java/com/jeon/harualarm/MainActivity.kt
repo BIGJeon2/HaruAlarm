@@ -38,8 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelProvider
-import com.jeon.model.VO.DayType
+import com.jeon.model.vo.DayType
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateConverter
@@ -248,7 +247,7 @@ private fun CalendarDayList(viewmodel: CalendarViewModelInterface) {
                                             color = todayTextColor,
                                             fontSize = 10.sp,
                                         )
-                                        if (displayDay.type != com.jeon.model.VO.DayType.WEEKDAY){
+                                        if (displayDay.type != com.jeon.model.vo.DayType.WEEKDAY){
                                             Text(
                                                 text = description,
                                                 maxLines = 1,

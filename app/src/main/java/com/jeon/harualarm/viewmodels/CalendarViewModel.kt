@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.database.DAO.TodoEventDao
-import com.jeon.database.DAO.HolidayDAO
 import com.jeon.database.Entity.TodoEvent
 import com.jeon.database.Entity.Holiday
 import com.jeon.database.repository.HolidayRepository
@@ -29,7 +27,7 @@ class CalendarViewModel @Inject constructor(
     override var dateConverter = DateConverter()
     override var dateProvider = DateProvider()
     override var currDate = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
-    override var dayList: SnapshotStateList<com.jeon.model.DTO.CalendarDate> = mutableStateListOf()
+    override var dayList: SnapshotStateList<com.jeon.model.dto.CalendarDate> = mutableStateListOf()
     var todoList: SnapshotStateList<TodoEvent> = mutableStateListOf()
 
     init {
@@ -62,7 +60,7 @@ class CalendarViewModel @Inject constructor(
 
     override fun setDayList(){
         val calendar = currDate.value.clone() as Calendar
-        val days = ArrayList<com.jeon.model.DTO.CalendarDate>()
+        val days = ArrayList<com.jeon.model.dto.CalendarDate>()
         viewModelScope.launch(Dispatchers.IO) {
             //Add before date
             val beforeDate = dateProvider.getBeforeMonth(calendar)
@@ -100,21 +98,21 @@ class CalendarViewModel @Inject constructor(
         setDayList()
     }
 
-    private suspend fun getCalendarDate(date: Calendar): com.jeon.model.DTO.CalendarDate {
+    private suspend fun getCalendarDate(date: Calendar): com.jeon.model.dto.CalendarDate {
         val dateID = dateConverter.dateID(date)
         val holiday = getHoliday(dateID)
-        val type = if (holiday != null) com.jeon.model.VO.DayType.HOLIDAY else checkDayType(date)
+        val type = if (holiday != null) com.jeon.model.vo.DayType.HOLIDAY else checkDayType(date)
         val eventSize = jobDatabase.getEventSize(dateID)
         val description = holiday?.description ?: ""
-        return com.jeon.model.DTO.CalendarDate(date, dateID, type, eventSize, description)
+        return com.jeon.model.dto.CalendarDate(date, dateID, type, eventSize, description)
     }
 
     private suspend fun getHoliday(dateID: String): Holiday?{
         return holidayRepository.getHoliday(dateID)
     }
 
-    private fun checkDayType(date: Calendar): com.jeon.model.VO.DayType {
-        return if (date[7] == 1 || date[7] == 7) com.jeon.model.VO.DayType.WEEKEND else com.jeon.model.VO.DayType.WEEKDAY
+    private fun checkDayType(date: Calendar): com.jeon.model.vo.DayType {
+        return if (date[7] == 1 || date[7] == 7) com.jeon.model.vo.DayType.WEEKEND else com.jeon.model.vo.DayType.WEEKDAY
     }
 
 }

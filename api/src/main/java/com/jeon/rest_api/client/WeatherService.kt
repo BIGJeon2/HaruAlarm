@@ -1,7 +1,7 @@
 package com.jeon.rest_api.client
 
 import com.jeon.rest_api.keys.WeatherAPIKEY
-import com.jeon.model.DTO.Weather
+import com.jeon.rest_api.model.Weather
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

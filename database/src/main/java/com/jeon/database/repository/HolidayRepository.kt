@@ -1,10 +1,10 @@
 package com.jeon.database.repository
 
 import androidx.annotation.WorkerThread
-import com.jeon.database.DAO.HolidayDAO
+import com.jeon.database.dao.HolidayDao
 import com.jeon.database.Entity.Holiday
 
-class HolidayRepository(private val holidayDAO: HolidayDAO) {
+class HolidayRepository(private val holidayDAO: HolidayDao) {
 
     val getAllHolidays = holidayDAO.getAllHolidays()
 

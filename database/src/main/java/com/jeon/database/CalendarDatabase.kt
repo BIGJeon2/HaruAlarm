@@ -2,12 +2,10 @@ package com.jeon.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.jeon.database.DAO.TodoEventDao
-import com.jeon.database.DAO.HolidayDAO
+import com.jeon.database.dao.TodoEventDao
+import com.jeon.database.dao.HolidayDao
 import com.jeon.database.Entity.TodoEvent
 import com.jeon.database.Entity.Holiday
-import com.jeon.database.repository.HolidayRepository
-import com.jeon.database.repository.TodoEventRepository
 
 @Database(
     entities = [Holiday::class, TodoEvent::class],
@@ -15,6 +13,6 @@ import com.jeon.database.repository.TodoEventRepository
     exportSchema = false
 )
 abstract class CalendarDatabase :RoomDatabase(){
-    abstract fun holidayDao(): HolidayDAO
+    abstract fun holidayDao(): HolidayDao
     abstract fun todoEventDao(): TodoEventDao
 }

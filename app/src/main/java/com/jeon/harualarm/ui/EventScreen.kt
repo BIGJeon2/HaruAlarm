@@ -38,7 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jeon.database.DAO.TodoEventDao
+import com.jeon.database.dao.TodoEventDao
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.SecondaryColor
 import com.jeon.harualarm.viewmodels.CalendarViewModel

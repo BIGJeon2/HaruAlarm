@@ -1,4 +1,4 @@
-package com.jeon.model.DTO
+package com.jeon.rest_api.model
 
 
 data class Holidays(

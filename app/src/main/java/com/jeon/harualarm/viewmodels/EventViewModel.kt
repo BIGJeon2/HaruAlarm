@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.database.DAO.TodoEventDao
 import com.jeon.database.Entity.TodoEvent
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter

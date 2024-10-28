@@ -1,7 +1,7 @@
 package com.jeon.rest_api.client
 
 import com.jeon.rest_api.keys.HolidayAPIKey
-import com.jeon.model.DTO.Holidays
+import com.jeon.rest_api.model.Holidays
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -3,7 +3,7 @@ package com.jeon.database.Entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.jeon.model.VO.EventType
+import com.jeon.model.vo.EventType
 
 @Entity(tableName = "todo_event_table")
 data class TodoEvent(

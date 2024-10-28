@@ -1,4 +1,4 @@
-package com.jeon.database.DAO
+package com.jeon.database.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -10,7 +10,7 @@ import com.jeon.database.Entity.Holiday
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface HolidayDAO {
+interface HolidayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertHoliday(holiday: Holiday)
 
