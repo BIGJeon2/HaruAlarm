@@ -52,8 +52,8 @@ android {
 }
 
 dependencies {
-/*    val nav_version = "2.4.2"
-    implementation("androidx.navigation:navigation-compose:$nav_version")*/
+
+    implementation("de.drick.compose:edge-to-edge-preview:0.3.0")
 
     implementation(project(":model"))
     implementation(project(":database"))

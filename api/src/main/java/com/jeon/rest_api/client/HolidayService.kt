@@ -1,7 +1,7 @@
 package com.jeon.rest_api.client
 
 import com.jeon.rest_api.keys.HolidayAPIKey
-import com.jeon.rest_api.model.Holidays
+import com.jeon.rest_api.model.HolidayResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -13,5 +13,5 @@ interface HolidayService {
         @Query("ServiceKey", encoded = true) serviceKey: String = HolidayAPIKey.ENCODING_KEY,
         @Query("_type") type: String = "json",
         @Query("numOfRows") row: Int = 100
-    ): Call<Holidays>
+    ): Call<HolidayResponse>
 }

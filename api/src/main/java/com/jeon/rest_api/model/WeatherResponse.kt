@@ -1,6 +1,6 @@
 package com.jeon.rest_api.model
 
-data class Weather(val response: Response) {
+data class WeatherResponse(val response: Response) {
     data class Response(
         val header: Header,
         val body: Body

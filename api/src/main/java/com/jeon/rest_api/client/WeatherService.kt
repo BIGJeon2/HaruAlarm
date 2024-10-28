@@ -1,7 +1,7 @@
 package com.jeon.rest_api.client
 
 import com.jeon.rest_api.keys.WeatherAPIKEY
-import com.jeon.rest_api.model.Weather
+import com.jeon.rest_api.model.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -16,5 +16,5 @@ interface WeatherService {
         @Query("base_time") baseTime : Int,
         @Query("nx") nx : String,
         @Query("ny") ny : String
-    ) : Response<Weather>
+    ) : Response<WeatherResponse>
 }

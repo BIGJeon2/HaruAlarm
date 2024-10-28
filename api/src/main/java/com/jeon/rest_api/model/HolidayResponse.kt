@@ -1,7 +1,7 @@
 package com.jeon.rest_api.model
 
 
-data class Holidays(
+data class HolidayResponse(
     val response: Response = Response()
 ) {
     data class Response(

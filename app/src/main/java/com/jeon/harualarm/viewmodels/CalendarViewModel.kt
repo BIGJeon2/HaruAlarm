@@ -11,6 +11,7 @@ import com.jeon.database.repository.HolidayRepository
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
+import com.jeon.model.vo.EventType
 import com.jeon.rest_api.repository.HolidayApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +32,16 @@ class CalendarViewModel @Inject constructor(
     var todoList: SnapshotStateList<TodoEvent> = mutableStateListOf()
 
     init {
+        todoList.add(TodoEvent(
+            "소현이 약속",
+            EventType.DAY,
+            "설명 칸",
+            dateConverter.dateToString(currDate.value),
+            dateConverter.dateToString(currDate.value),
+            true,
+            30L,
+            dateConverter.dateID(currDate.value)
+        ))
         viewModelScope.launch(Dispatchers.IO) {
             if (holidayRepository.getAllHolidaysCount() == 0){
                 for (year in 2003 .. 2026){
