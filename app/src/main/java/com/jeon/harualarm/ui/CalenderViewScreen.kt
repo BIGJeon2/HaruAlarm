@@ -86,8 +86,8 @@ class CalenderViewScreen(private val calendarViewModel: CalendarViewModelInterfa
             Column(modifier = Modifier.padding(6.dp)) {
                 CalendarHeader(calendarViewModel)
                 HorizontalDivider(
-                    thickness = 2.dp,
-                    color = Color.LightGray
+                    thickness = 1.dp,
+                    color = MainColor
                 )
                 CalendarDayName()
                 CalendarDayList(calendarViewModel)

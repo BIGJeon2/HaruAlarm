@@ -8,8 +8,6 @@ import com.jeon.harualarm.util.DateProvider
 import java.util.Calendar
 
 interface EventViewModelInterface {
-    var dateConverter: DateConverter
-    var dateProvider: DateProvider
     var date: MutableState<Calendar>
     var eventList: SnapshotStateList<TodoEvent>
     fun getEvent(date: Calendar)

@@ -68,7 +68,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             HaruAlarmTheme {
                 Column(
-                    modifier = Modifier.background(MainColor)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MainColor)
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
                     CalenderViewScreen(calendarViewModel).CalendarView()
@@ -94,7 +96,9 @@ fun CalendarViewPreview() {
         HaruAlarmTheme {
             val vm = FakeCalendarViewModel()
             Column(
-                modifier = Modifier.background(MainColor)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MainColor)
             ){
                 Spacer(modifier = Modifier.height(20.dp))
                 CalenderViewScreen(vm).CalendarView()

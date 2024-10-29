@@ -8,13 +8,16 @@ import com.jeon.database.Entity.TodoEvent
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import javax.inject.Inject
 
-class EventViewModel(private val eventRepository: TodoEventRepository): ViewModel(), EventViewModelInterface {
-    override var dateConverter = DateConverter()
-    override var dateProvider = DateProvider()
+@HiltViewModel
+class EventViewModel @Inject constructor(private val eventRepository: TodoEventRepository): ViewModel(), EventViewModelInterface {
+    var dateConverter = DateConverter()
+    var dateProvider = DateProvider()
     override var date = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
     override var eventList = SnapshotStateList<TodoEvent>()
 
