@@ -144,7 +144,7 @@ class EventScreen(private val eventViewmodel: EventViewModelInterface) {
                 modifier = Modifier.padding(top = 12.dp)
             ) {
                 items(alarmList) { alarm ->
-                    AlarmItemView().AlarmItem(time = alarm.endDate, isEnabled = alarm.isAlarm)
+                    AlarmItemView().AlarmItem(alarm)
                 }
             }
         }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -45,65 +46,69 @@ class AlarmItemView() {
     fun AlarmItem(event: TodoEvent) {
         var alarmEnabled by remember { mutableStateOf(event.isAlarm) }
         var viewState by remember {
-            mutableStateOf(true)
+            mutableStateOf(false)
         }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(MainColor)
-                .padding(6.dp)
-                .clickable {
-                    viewState = !viewState
-                },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Card(
+            modifier = Modifier.padding(top = 6.dp)
         ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(MainColor)
+                    .padding(6.dp)
+                    .clickable {
+                        viewState = !viewState
+                    },
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.weight(6f),
-                    verticalArrangement = Arrangement.SpaceAround
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Row {
+                    Column(
+                        modifier = Modifier.weight(6f),
+                        verticalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Row {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = event.title,
+                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                textAlign = TextAlign.Start
+                            )
+                        }
+                    }
+                    Switch(
+                        modifier = Modifier.weight(1f),
+                        checked = alarmEnabled,
+                        onCheckedChange = { alarmEnabled = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color(0xFFA4E2A6),
+                            uncheckedThumbColor = Color(0xFF625b71)
+                        )
+                    )
+                }
+                if(viewState){
+                    Column {
+                        HorizontalDivider(thickness = 1.dp)
                         Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = event.title,
-                            fontSize = 16.sp,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = Color.Black,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Start
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 6.dp),
+                            text = event.description,
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black
                         )
                     }
-                }
-                Switch(
-                    modifier = Modifier.weight(1f),
-                    checked = alarmEnabled,
-                    onCheckedChange = { alarmEnabled = it },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color(0xFFA4E2A6),
-                        uncheckedThumbColor = Color(0xFF625b71)
-                    )
-                )
-            }
-            if(viewState){
-                Column {
-                    HorizontalDivider(thickness = 1.dp)
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp),
-                        text = event.description,
-                        fontSize = 12.sp,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
                 }
             }
         }
