@@ -6,7 +6,6 @@ import javax.inject.Inject
 class HolidayApiRepository @Inject constructor(
     private val holidayService: HolidayService
 ) {
-
     suspend fun getAllHoliday(year: Int) =
         holidayService.getHolidays(year)
 

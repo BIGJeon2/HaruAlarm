@@ -1,18 +1,28 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
 }
 
+val properties = gradleLocalProperties(rootDir, providers)
+val apiKey: String = properties.getProperty("API_KEY")
+
 android {
     namespace = "com.jeon.rest_api"
     compileSdk = 34
-
+    android.buildFeatures.buildConfig = true
     defaultConfig {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField("String", "API_KEY", getApiKey("API_KEY"))
+    }
+
+    buildFeatures{
+        buildConfig = true
     }
 
     buildTypes {
@@ -31,6 +41,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+fun getApiKey(key: String): String{
+    return gradleLocalProperties(rootDir, providers).getProperty(key)
 }
 
 dependencies {

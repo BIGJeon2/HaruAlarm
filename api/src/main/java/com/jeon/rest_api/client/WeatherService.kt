@@ -1,13 +1,13 @@
 package com.jeon.rest_api.client
 
-import com.jeon.rest_api.keys.WeatherAPIKEY
+import com.jeon.rest_api.BuildConfig
 import com.jeon.rest_api.model.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherService {
-    @GET("getVilageFcst?serviceKey=${WeatherAPIKEY.ENCODING_KEY}")
+    @GET("getVilageFcst?serviceKey=${BuildConfig.API_KEY}")
     suspend fun getWeather(
         @Query("dataType") dataType : String,
         @Query("numOfRows") numOfRows : Int,
