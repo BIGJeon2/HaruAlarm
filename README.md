@@ -1,1 +1,1 @@
-https://victorious-fisher-47a.notion.site/7482c63c0e2b423199ecdbde31725f25?pvs=4
+Notion 링크 : https://victorious-fisher-47a.notion.site/132ec566987280a79f45dcca7871c30c
