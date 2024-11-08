@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     Text(text = "다음 일정", modifier = Modifier.padding(start = 6.dp), fontSize = 18.sp)
                     AlarmItemView().AlarmItemExpand(
                         onCompleteClick = { event ->
-                            calendarViewModel.updateEvent(event)
+                            calendarViewModel.addJob(event)
                         },
                         todoEvent = TodoEvent(
                             "소현이 약속",

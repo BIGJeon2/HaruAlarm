@@ -240,7 +240,7 @@ class CustomCalendarView {
                                                 color = todayTextColor,
                                                 fontSize = 10.sp,
                                             )
-                                            if (displayDay.type != DayType.WEEKDAY) {
+                                            if (displayDay.type == DayType.HOLIDAY) {
                                                 Text(
                                                     text = description,
                                                     maxLines = 1,
