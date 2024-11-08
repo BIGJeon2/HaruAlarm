@@ -7,10 +7,11 @@ import kotlinx.coroutines.flow.Flow
 
 class TodoEventRepository(private val todoEventDao: TodoEventDao) {
 
-    val allTodoEvents : Flow<List<TodoEvent>> = todoEventDao.getAllEvent()
+    @WorkerThread
+    fun getAllTodoEvents() : Flow<List<TodoEvent>> = todoEventDao.getAllEvent()
 
     @WorkerThread
-    suspend fun getEventList(dateID: String): Flow<List<TodoEvent>> = todoEventDao.getEvent(dateID)
+    fun getEventList(dateID: String): Flow<List<TodoEvent>> = todoEventDao.getEvent(dateID)
 
     @WorkerThread
     suspend fun insertEvent(event: TodoEvent) = todoEventDao.insertEvent(event)
