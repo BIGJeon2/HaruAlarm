@@ -22,7 +22,10 @@ data class TodoEvent(
     @ColumnInfo(name = "alarm_rate")
     var alarmRate: Long,
     @ColumnInfo(name = "date_id")
-    val dateID: String
+    val dateID: String,
+    @ColumnInfo(name = "isComplete")
+    var isComplete: Boolean = false,
+
 ) {
     @PrimaryKey(autoGenerate = true)
     var eventId: Long = 0

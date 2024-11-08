@@ -1,7 +1,5 @@
 package com.jeon.harualarm.viewmodels
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -13,13 +11,11 @@ import com.jeon.database.repository.HolidayRepository
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
-import com.jeon.model.dto.CalendarDate
-import com.jeon.model.vo.EventType
+import com.jeon.harualarm.CalendarDate
 import com.jeon.rest_api.repository.HolidayApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -29,26 +25,21 @@ class CalendarViewModel @Inject constructor(
     private val holidayRepository: HolidayRepository,
     private val jobDatabase: TodoEventRepository,
     private val holidayAPI: HolidayApiRepository
-): ViewModel(), CalendarViewModelInterface {
-    override var dateConverter = DateConverter()
-    override var dateProvider = DateProvider()
-    override var currDate = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
-    override var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
-    val todoList = jobDatabase.getAllTodoEvents().collectAsState(initial = emptyList())
+): ViewModel(){
+    private var dateConverter = DateConverter()
+    private var dateProvider = DateProvider()
+    var currDate = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
+    var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
 
     init {
-        /*todoList.add(TodoEvent(
-            "소현이 약속",
-            EventType.DAY,
-            "설명 칸",
-            dateConverter.dateToString(currDate.value),
-            dateConverter.dateToString(currDate.value),
-            true,
-            30L,
-            dateConverter.dateID(currDate.value)
-        ))*/
         getHolidayList()
         setDayList()
+    }
+
+    fun addJob(event: TodoEvent){
+        viewModelScope.launch(Dispatchers.IO) {
+            jobDatabase.insertEvent(event)
+        }
     }
 
     fun getTodoList(date: CalendarDate): Flow<List<TodoEvent>> = jobDatabase.getEventList(date.dateID)
@@ -80,7 +71,7 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    override fun setDayList(){
+    private fun setDayList(){
         val calendar = currDate.value.clone() as Calendar
         val days = ArrayList<CalendarDate>()
         viewModelScope.launch(Dispatchers.IO) {
@@ -110,12 +101,12 @@ class CalendarViewModel @Inject constructor(
         }
     }
 
-    override fun setBeforeMonth() {
+    fun setBeforeMonth() {
         currDate.value = dateProvider.getBeforeMonth(currDate.value)
         setDayList()
     }
 
-    override fun setNextMonth() {
+    fun setNextMonth() {
         currDate.value = dateProvider.getNextMonth(currDate.value)
         setDayList()
     }
@@ -124,9 +115,8 @@ class CalendarViewModel @Inject constructor(
         val dateID = dateConverter.dateID(date)
         val holiday = getHoliday(dateID)
         val type = if (holiday != null) com.jeon.model.vo.DayType.HOLIDAY else checkDayType(date)
-        val eventSize = jobDatabase.getEventSize(dateID)
         val description = holiday?.description ?: ""
-        return CalendarDate(date, dateID, type, eventSize, description)
+        return CalendarDate(date, dateID, type, description)
     }
 
     private suspend fun getHoliday(dateID: String): Holiday?{
@@ -141,10 +131,6 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             jobDatabase.updateEvent(event)
         }
-    }
-
-    private fun updateDayList(){
-
     }
 
 }

@@ -9,7 +9,7 @@ import com.jeon.database.Entity.Holiday
 
 @Database(
     entities = [Holiday::class, TodoEvent::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class CalendarDatabase :RoomDatabase(){
