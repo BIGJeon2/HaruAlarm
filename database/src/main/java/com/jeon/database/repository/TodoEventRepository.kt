@@ -14,7 +14,7 @@ class TodoEventRepository(private val todoEventDao: TodoEventDao) {
     fun getEventList(dateID: String): Flow<List<TodoEvent>> = todoEventDao.getEvent(dateID)
 
     @WorkerThread
-    suspend fun insertEvent(event: TodoEvent) = todoEventDao.insertEvent(event)
+    fun insertEvent(event: TodoEvent) = todoEventDao.insertEvent(event)
 
     @WorkerThread
     suspend fun deletedEvent(event: TodoEvent) = todoEventDao.deletedEvent(event)
