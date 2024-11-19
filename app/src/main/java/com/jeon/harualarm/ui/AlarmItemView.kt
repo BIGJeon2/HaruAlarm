@@ -191,13 +191,13 @@ class AlarmItemView() {
             modifier = Modifier
                 .padding(padding)
                 .height(25.dp)
-                .padding(1.dp),
-            shape = RoundedCornerShape(1.dp)
+                .padding(2.dp),
+            shape = RoundedCornerShape(3.dp)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White),
+                    .background(MainColor),
                 verticalAlignment = Alignment.CenterVertically
             ){
                 val dividerColor = when(todoEvent.eventType){
@@ -209,9 +209,9 @@ class AlarmItemView() {
                 VerticalDivider(color = dividerColor, thickness = 2.dp)
                 Text(
                     modifier = Modifier
-                        .padding(start = 6.dp),
+                        .padding(start = 1.dp),
                     text = todoEvent.title,
-                    fontSize = 10.sp,
+                    fontSize = 8.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = titleColor,
                     maxLines = 1,
