@@ -57,7 +57,6 @@ class CustomCalendarView {
         onRightSwipe: () -> Unit?,
         onDateClick: (Calendar) -> Unit?
     ) {
-
         var startX by remember { mutableFloatStateOf(0f) }
         var endX by remember { mutableFloatStateOf(0f) }
         Column(
@@ -173,6 +172,7 @@ class CustomCalendarView {
                 ) {
                     Text(
                         text = it,
+                        color = Color.Black,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
@@ -192,7 +192,7 @@ class CustomCalendarView {
         Column(
             modifier = Modifier
                 .background(Color.Transparent)
-                .padding(top = 12.dp)
+                .padding(top = 6.dp)
         ) {
             repeat(5) { week ->
                 Row(
@@ -215,9 +215,8 @@ class CustomCalendarView {
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .aspectRatio(0.6f)
-                                    .padding(2.dp)
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .aspectRatio(0.55f)
+                                    .clip(RoundedCornerShape(6.dp))
                                     .background(backgroundColor),
                                 contentAlignment = Alignment.TopCenter
                             ) {
@@ -228,7 +227,7 @@ class CustomCalendarView {
                                         },
                                         shape = RoundedCornerShape(10.dp),
                                         modifier = Modifier.fillMaxSize(),
-                                        contentPadding = PaddingValues(2.dp)
+                                        contentPadding = PaddingValues(0.dp)
                                     ) {
                                         Column(
                                             modifier = Modifier.fillMaxSize(),
@@ -249,11 +248,44 @@ class CustomCalendarView {
                                                 )
                                             }
                                             if (todoList != null && todoList.value.isNotEmpty()){
-                                                Text(
-                                                    text = todoList.value.size.toString(),
-                                                    color = Color.Blue,
-                                                    fontSize = 10.sp,
-                                                )
+                                                val todoItems = todoList.value
+                                                if (todoItems.size >= 3){
+                                                    if (displayDay.type == DayType.HOLIDAY){
+                                                        Column {
+                                                            val todo = todoItems[0]
+                                                            AlarmItemView().AlarmItemMinimal(
+                                                                todoEvent = todo,
+                                                                padding = 0.dp
+                                                            )
+                                                        }
+                                                    }else{
+                                                        Column {
+                                                            for (i in 0..1) {
+                                                                val todo = todoItems[i]
+                                                                AlarmItemView().AlarmItemMinimal(
+                                                                    todoEvent = todo,
+                                                                    padding = 0.dp
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+                                                    Text(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        text = "+${todoItems.size - 2}",
+                                                        fontSize = 10.sp,
+                                                        color = Color.Black,
+                                                        textAlign = TextAlign.Center)
+                                                }else{
+                                                    Column {
+                                                        for (todo in todoItems) {
+                                                            AlarmItemView().AlarmItemMinimal(
+                                                                todoEvent = todo,
+                                                                padding = 0.dp
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
                                             }
                                         }
                                     }
@@ -287,7 +319,7 @@ fun CalendarViewPreview(){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp)
+            .padding(6.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally

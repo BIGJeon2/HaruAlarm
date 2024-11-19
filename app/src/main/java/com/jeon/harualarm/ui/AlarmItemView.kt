@@ -1,21 +1,26 @@
 package com.jeon.harualarm.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,10 +130,16 @@ class AlarmItemView() {
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(5.dp))
                     .background(white)
-                    .padding(6.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.Start
             ) {
+                Text(
+                    text = "다음 일정",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Gray
+                )
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -134,33 +148,28 @@ class AlarmItemView() {
                 ) {
                     Column(
                         modifier = Modifier.weight(6f),
-                        verticalArrangement = Arrangement.SpaceAround
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            modifier = Modifier.padding(6.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = todoEvent.title,
-                                fontSize = 16.sp,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.Black,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                textAlign = TextAlign.Start
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 6.dp),
-                                text = todoEvent.description,
-                                fontSize = 12.sp,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Black
-                            )
-                        }
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = todoEvent.title,
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.Black,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Start
+                        )
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 6.dp),
+                            text = todoEvent.description,
+                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Black
+                        )
                     }
                     TextButton(
                         onClick = {
@@ -172,6 +181,42 @@ class AlarmItemView() {
                         Text(text = "완료")
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun AlarmItemMinimal(todoEvent: TodoEvent, padding: Dp){
+        Card(
+            modifier = Modifier
+                .padding(padding)
+                .height(25.dp)
+                .padding(1.dp),
+            shape = RoundedCornerShape(1.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White),
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                val dividerColor = when(todoEvent.eventType){
+                    EventType.PERIOD -> Color.Magenta
+                    EventType.DAY -> Color.Cyan
+                    EventType.REPEAT -> Color.Yellow
+                }
+                val titleColor = if (todoEvent.isComplete) Color.Gray else Color.Black
+                VerticalDivider(color = dividerColor, thickness = 2.dp)
+                Text(
+                    modifier = Modifier
+                        .padding(start = 6.dp),
+                    text = todoEvent.title,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = titleColor,
+                    maxLines = 1,
+                    textAlign = TextAlign.Start
+                )
             }
         }
     }
@@ -198,8 +243,8 @@ fun AlarmItemPreview(){
         Column {
             AlarmItemView().AlarmItemBasic(todo)
             AlarmItemView().AlarmItemExpand(onCompleteClick =  {
-
             },todo, 12.dp)
+            AlarmItemView().AlarmItemMinimal(todo, 12.dp)
         }
     }
 }
