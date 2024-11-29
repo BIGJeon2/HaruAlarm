@@ -21,6 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "HaruAlarm"
 include(":app")
-include(":model")
 include(":api")
 include(":database")

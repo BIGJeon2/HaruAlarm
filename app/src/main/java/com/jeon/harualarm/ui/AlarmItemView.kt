@@ -1,19 +1,16 @@
 package com.jeon.harualarm.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -30,8 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,18 +34,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jeon.database.Entity.TodoEvent
+import com.jeon.database.dto.TodoEventDTO
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.ui.theme.white
 import com.jeon.harualarm.util.DateConverter
-import com.jeon.model.vo.EventType
+import com.jeon.database.vo.EventType
 import java.util.Calendar
 
 class AlarmItemView() {
     @Composable
-    fun AlarmItemBasic(todoEvent: TodoEvent){
-        var alarmEnabled by remember { mutableStateOf(todoEvent.isAlarm) }
+    fun AlarmItemBasic(todoEventDTO: TodoEventDTO){
+        var alarmEnabled by remember { mutableStateOf(todoEventDTO.isAlarm) }
         var viewState by remember {
             mutableStateOf(false)
         }
@@ -82,7 +77,7 @@ class AlarmItemView() {
                         Row {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = todoEvent.title,
+                                text = todoEventDTO.title,
                                 fontSize = 16.sp,
                                 style = MaterialTheme.typography.labelLarge,
                                 color = Color.Black,
@@ -109,7 +104,7 @@ class AlarmItemView() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 6.dp),
-                            text = todoEvent.description,
+                            text = todoEventDTO.description,
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Black
@@ -121,7 +116,7 @@ class AlarmItemView() {
     }
 
     @Composable
-    fun AlarmItemExpand(onCompleteClick: (TodoEvent) -> Unit, todoEvent: TodoEvent, padding: Dp){
+    fun AlarmItemExpand(onCompleteClick: (TodoEventDTO) -> Unit, todoEventDTO: TodoEventDTO, padding: Dp){
         Card(
             modifier = Modifier.padding(padding)
         ) {
@@ -153,7 +148,7 @@ class AlarmItemView() {
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = todoEvent.title,
+                            text = todoEventDTO.title,
                             fontSize = 16.sp,
                             style = MaterialTheme.typography.labelLarge,
                             color = Color.Black,
@@ -165,7 +160,7 @@ class AlarmItemView() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 6.dp),
-                            text = todoEvent.description,
+                            text = todoEventDTO.description,
                             fontSize = 12.sp,
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Black
@@ -173,7 +168,7 @@ class AlarmItemView() {
                     }
                     TextButton(
                         onClick = {
-                            onCompleteClick(todoEvent)
+                            onCompleteClick(todoEventDTO)
                         },
                         modifier = Modifier.weight(1.5f),
                         colors = ButtonColors(MainColor, Color.Black, Color.LightGray, Color.Black)
@@ -186,7 +181,7 @@ class AlarmItemView() {
     }
 
     @Composable
-    fun AlarmItemMinimal(todoEvent: TodoEvent, padding: Dp){
+    fun AlarmItemMinimal(todoEventDTO: TodoEventDTO, padding: Dp){
         Card(
             modifier = Modifier
                 .padding(padding)
@@ -200,17 +195,17 @@ class AlarmItemView() {
                     .background(MainColor),
                 verticalAlignment = Alignment.CenterVertically
             ){
-                val dividerColor = when(todoEvent.eventType){
+                val dividerColor = when(todoEventDTO.eventType){
                     EventType.PERIOD -> Color.Magenta
                     EventType.DAY -> Color.Cyan
                     EventType.REPEAT -> Color.Yellow
                 }
-                val titleColor = if (todoEvent.isComplete) Color.Gray else Color.Black
+                val titleColor = if (todoEventDTO.isComplete) Color.Gray else Color.Black
                 VerticalDivider(color = dividerColor, thickness = 2.dp)
                 Text(
                     modifier = Modifier
                         .padding(start = 1.dp),
-                    text = todoEvent.title,
+                    text = todoEventDTO.title,
                     fontSize = 8.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = titleColor,
@@ -229,7 +224,7 @@ class AlarmItemView() {
 @Composable
 fun AlarmItemPreview(){
     val date = Calendar.getInstance()
-    val todo = TodoEvent(
+    val todo = TodoEventDTO(
         "Title",
         EventType.DAY,
         "Description",

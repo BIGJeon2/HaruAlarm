@@ -7,35 +7,28 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jeon.database.Entity.TodoEvent
+import com.jeon.database.dto.TodoEventDTO
 import com.jeon.harualarm.ui.AlarmItemView
 import com.jeon.harualarm.ui.CalendarViewPreview
 import com.jeon.harualarm.ui.CustomCalendarView
-import com.jeon.model.vo.DayType
+import com.jeon.database.vo.DayType
 import com.jeon.harualarm.ui.theme.HaruAlarmTheme
 import com.jeon.harualarm.ui.theme.MainColor
 import com.jeon.harualarm.util.DateConverter
-import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.viewmodels.CalendarViewModel
-import com.jeon.model.vo.EventType
+import com.jeon.database.dto.CalendarDateDTO
+import com.jeon.database.vo.EventType
 import dagger.hilt.android.AndroidEntryPoint
-import de.drick.compose.edgetoedgepreviewlib.CameraCutoutMode
-import de.drick.compose.edgetoedgepreviewlib.EdgeToEdgeTemplate
-import de.drick.compose.edgetoedgepreviewlib.NavigationMode
 import java.util.ArrayList
 import java.util.Calendar
 
@@ -62,7 +55,7 @@ class MainActivity : ComponentActivity() {
                             onCompleteClick = { event ->
                                 calendarViewModel.addJob(event)
                             },
-                            todoEvent = TodoEvent(
+                            todoEventDTO = TodoEventDTO(
                                 "소현이 약속",
                                 EventType.DAY,
                                 "설명 칸",
@@ -97,10 +90,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainActivityPreview() {
     val currDate = Calendar.getInstance()
-    val dayList = ArrayList<CalendarDate>()
+    val dayList = ArrayList<CalendarDateDTO>()
     for (i in 0..34){
         dayList.add(
-            CalendarDate(
+            CalendarDateDTO(
                 currDate,
                 dateConverter.dateID(currDate),
                 DayType.WEEKDAY,
@@ -109,7 +102,7 @@ fun MainActivityPreview() {
             )
         )
     }
-    val todo = TodoEvent(
+    val todo = TodoEventDTO(
         "소현이 약속",
         EventType.DAY,
         "설명 칸",
@@ -131,7 +124,7 @@ fun MainActivityPreview() {
                     .padding(innerPadding)
             ){
                 Text(text = "다음 일정", modifier = Modifier.padding(start = 6.dp), fontSize = 18.sp)
-                AlarmItemView().AlarmItemExpand(onCompleteClick = {}, todoEvent = todo, padding = 6.dp)
+                AlarmItemView().AlarmItemExpand(onCompleteClick = {}, todoEventDTO = todo, padding = 6.dp)
                 CalendarViewPreview()
                 Text(text = "광고", modifier = Modifier.fillMaxWidth(), fontSize = 18.sp)
             }

@@ -34,7 +34,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":model"))
 
     //hilt
     implementation(libs.hilt.android)

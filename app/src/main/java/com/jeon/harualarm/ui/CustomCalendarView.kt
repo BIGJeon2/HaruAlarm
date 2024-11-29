@@ -17,7 +17,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -34,13 +33,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jeon.database.Entity.TodoEvent
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
-import com.jeon.harualarm.CalendarDate
+import com.jeon.database.dto.CalendarDateDTO
 import com.jeon.harualarm.ui.theme.MainColor
-import com.jeon.harualarm.viewmodels.CalendarViewModel
-import com.jeon.model.vo.DayType
+import com.jeon.database.vo.DayType
 import java.util.ArrayList
 import java.util.Calendar
 
@@ -52,7 +49,7 @@ class CustomCalendarView {
     @Composable
     fun BasicCalendarView(
         currDate: Calendar,
-        dayList: List<CalendarDate>,
+        dayList: List<CalendarDateDTO>,
         paddingValues: Dp,
         isSwipe: Boolean,
         onLeftSwipe: () -> Unit?,
@@ -185,7 +182,7 @@ class CustomCalendarView {
 
     @Composable
     fun CalendarDayList (
-        dayList: List<CalendarDate>,
+        dayList: List<CalendarDateDTO>,
         onDateClick: (Calendar) -> Unit?
     ) {
         val dateConverter = DateConverter()
@@ -251,7 +248,7 @@ class CustomCalendarView {
                                                         Column {
                                                             val todo = todoList[0]
                                                             AlarmItemView().AlarmItemMinimal(
-                                                                todoEvent = todo,
+                                                                todoEventDTO = todo,
                                                                 padding = 0.dp
                                                             )
                                                         }
@@ -260,7 +257,7 @@ class CustomCalendarView {
                                                             for (i in 0..1) {
                                                                 val todo = todoList[i]
                                                                 AlarmItemView().AlarmItemMinimal(
-                                                                    todoEvent = todo,
+                                                                    todoEventDTO = todo,
                                                                     padding = 0.dp
                                                                 )
                                                             }
@@ -276,7 +273,7 @@ class CustomCalendarView {
                                                     Column {
                                                         for (todo in todoList) {
                                                             AlarmItemView().AlarmItemMinimal(
-                                                                todoEvent = todo,
+                                                                todoEventDTO = todo,
                                                                 padding = 0.dp
                                                             )
                                                         }
@@ -302,10 +299,10 @@ class CustomCalendarView {
 @Composable
 fun CalendarViewPreview(){
     val date = Calendar.getInstance()
-    val dayList = ArrayList<CalendarDate>()
+    val dayList = ArrayList<CalendarDateDTO>()
     for (i in 0..34){
         dayList.add(
-            CalendarDate(
+            CalendarDateDTO(
                 date,
                 dateConverter.dateID(date),
                 DayType.WEEKDAY,

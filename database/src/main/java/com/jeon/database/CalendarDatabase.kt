@@ -4,11 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.jeon.database.dao.TodoEventDao
 import com.jeon.database.dao.HolidayDao
-import com.jeon.database.Entity.TodoEvent
-import com.jeon.database.Entity.Holiday
+import com.jeon.database.dto.TodoEventDTO
+import com.jeon.database.dto.HolidayDTO
 
 @Database(
-    entities = [Holiday::class, TodoEvent::class],
+    entities = [HolidayDTO::class, TodoEventDTO::class],
     version = 4,
     exportSchema = false
 )

@@ -6,30 +6,30 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.jeon.database.Entity.Holiday
+import com.jeon.database.dto.HolidayDTO
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HolidayDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertHoliday(holiday: Holiday)
+    fun insertHoliday(holidayDTO: HolidayDTO)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAllHolidays(holidayList: List<Holiday>)
+    fun insertAllHolidays(holidayDTOList: List<HolidayDTO>)
 
     @Query("SELECT * FROM holidays")
-    fun getAllHolidays(): Flow<List<Holiday>>
+    fun getAllHolidays(): Flow<List<HolidayDTO>>
 
     @Query("SELECT COUNT(*) FROM holidays")
     fun getAllHolidaysCount(): Int
 
     @Delete
-    fun deletedHoliday(holiday: Holiday)
+    fun deletedHoliday(holidayDTO: HolidayDTO)
 
     @Update
-    fun updateEvent(holiday: Holiday)
+    fun updateEvent(holidayDTO: HolidayDTO)
 
     @Query("SELECT * FROM holidays WHERE date = :dateID")
-    fun getHoliday(dateID: String): Holiday?
+    fun getHoliday(dateID: String): HolidayDTO?
 
 }

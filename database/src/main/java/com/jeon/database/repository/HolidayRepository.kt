@@ -2,28 +2,28 @@ package com.jeon.database.repository
 
 import androidx.annotation.WorkerThread
 import com.jeon.database.dao.HolidayDao
-import com.jeon.database.Entity.Holiday
+import com.jeon.database.dto.HolidayDTO
 
 class HolidayRepository(private val holidayDAO: HolidayDao) {
 
     val getAllHolidays = holidayDAO.getAllHolidays()
 
     @WorkerThread
-    suspend fun insertHoliday(holiday: Holiday) = holidayDAO.insertHoliday(holiday)
+    suspend fun insertHoliday(holidayDTO: HolidayDTO) = holidayDAO.insertHoliday(holidayDTO)
 
     @WorkerThread
-    suspend fun insertAllHolidays(holidayList: List<Holiday>) = holidayDAO.insertAllHolidays(holidayList)
+    suspend fun insertAllHolidays(holidayDTOList: List<HolidayDTO>) = holidayDAO.insertAllHolidays(holidayDTOList)
 
     @WorkerThread
     suspend fun getAllHolidaysCount(): Int = holidayDAO.getAllHolidaysCount()
 
     @WorkerThread
-    suspend fun deletedHoliday(holiday: Holiday) = holidayDAO.deletedHoliday(holiday)
+    suspend fun deletedHoliday(holidayDTO: HolidayDTO) = holidayDAO.deletedHoliday(holidayDTO)
 
     @WorkerThread
-    suspend fun updateEvent(holiday: Holiday) = holidayDAO.updateEvent(holiday)
+    suspend fun updateEvent(holidayDTO: HolidayDTO) = holidayDAO.updateEvent(holidayDTO)
 
     @WorkerThread
-    suspend fun getHoliday(dateID: String): Holiday? = holidayDAO.getHoliday(dateID)
+    suspend fun getHoliday(dateID: String): HolidayDTO? = holidayDAO.getHoliday(dateID)
 
 }

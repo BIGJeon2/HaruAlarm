@@ -1,12 +1,12 @@
-package com.jeon.database.Entity
+package com.jeon.database.dto
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.jeon.model.vo.EventType
+import com.jeon.database.vo.EventType
 
 @Entity(tableName = "todo_event_table")
-data class TodoEvent(
+data class TodoEventDTO(
     @ColumnInfo(name = "title")
     var title: String,
     @ColumnInfo(name = "type")
@@ -26,7 +26,7 @@ data class TodoEvent(
     @ColumnInfo(name = "isComplete")
     var isComplete: Boolean = false,
 
-) {
+    ) {
     @PrimaryKey(autoGenerate = true)
     var eventId: Long = 0
 }

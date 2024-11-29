@@ -63,7 +63,6 @@ dependencies {
 
     implementation("de.drick.compose:edge-to-edge-preview:0.3.0")
 
-    implementation(project(":model"))
     implementation(project(":database"))
     implementation(project(":api"))
 

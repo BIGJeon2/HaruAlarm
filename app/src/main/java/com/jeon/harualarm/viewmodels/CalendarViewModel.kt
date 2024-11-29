@@ -5,17 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.database.Entity.TodoEvent
-import com.jeon.database.Entity.Holiday
+import com.jeon.database.dto.TodoEventDTO
+import com.jeon.database.dto.HolidayDTO
 import com.jeon.database.repository.HolidayRepository
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
-import com.jeon.harualarm.CalendarDate
+import com.jeon.database.dto.CalendarDateDTO
+import com.jeon.database.vo.DayType
 import com.jeon.rest_api.repository.HolidayApiRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import javax.inject.Inject
@@ -29,14 +29,14 @@ class CalendarViewModel @Inject constructor(
     private var dateConverter = DateConverter()
     private var dateProvider = DateProvider()
     var currDate = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
-    var dayList: SnapshotStateList<CalendarDate> = mutableStateListOf()
+    var dayList: SnapshotStateList<CalendarDateDTO> = mutableStateListOf()
 
     init {
         getHolidayList()
         setDayList()
     }
 
-    fun addJob(event: TodoEvent){
+    fun addJob(event: TodoEventDTO){
         viewModelScope.launch(Dispatchers.IO) {
             jobDatabase.insertEvent(event)
         }
@@ -51,16 +51,16 @@ class CalendarViewModel @Inject constructor(
                         val response = holidayAPI.getAllHoliday(year).execute()
                         if (response.isSuccessful) {
                             val items =  response.body()?.response?.body?.items?.item
-                            val holidays = ArrayList<Holiday>()
+                            val holidayDTOS = ArrayList<HolidayDTO>()
                             if (items != null) {
                                 for (i in items){
                                     if (i.isHoliday == "Y"){
-                                        holidays.add(Holiday(year, i.locdate, i.dateName))
+                                        holidayDTOS.add(HolidayDTO(year, i.locdate, i.dateName))
                                     }
                                 }
                                 setDayList()
                             }
-                            holidayRepository.insertAllHolidays(holidays)
+                            holidayRepository.insertAllHolidays(holidayDTOS)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -72,7 +72,7 @@ class CalendarViewModel @Inject constructor(
 
     private fun setDayList(){
         val calendar = currDate.value.clone() as Calendar
-        val days = ArrayList<CalendarDate>()
+        val days = ArrayList<CalendarDateDTO>()
         viewModelScope.launch(Dispatchers.IO) {
             //Add before date
             val beforeDate = dateProvider.getBeforeMonth(calendar)
@@ -110,24 +110,24 @@ class CalendarViewModel @Inject constructor(
         setDayList()
     }
 
-    private suspend fun getCalendarDate(date: Calendar): CalendarDate {
+    private suspend fun getCalendarDate(date: Calendar): CalendarDateDTO {
         val dateID = dateConverter.dateID(date)
         val holiday = getHoliday(dateID)
-        val type = if (holiday != null) com.jeon.model.vo.DayType.HOLIDAY else checkDayType(date)
+        val type = if (holiday != null) DayType.HOLIDAY else checkDayType(date)
         val description = holiday?.description ?: ""
         val todoList = jobDatabase.getEventList(dateID)
-        return CalendarDate(date, dateID, type, description, todoList)
+        return CalendarDateDTO(date, dateID, type, description, todoList)
     }
 
-    private suspend fun getHoliday(dateID: String): Holiday?{
+    private suspend fun getHoliday(dateID: String): HolidayDTO?{
         return holidayRepository.getHoliday(dateID)
     }
 
-    private fun checkDayType(date: Calendar): com.jeon.model.vo.DayType {
-        return if (date[7] == 1 || date[7] == 7) com.jeon.model.vo.DayType.WEEKEND else com.jeon.model.vo.DayType.WEEKDAY
+    private fun checkDayType(date: Calendar): DayType {
+        return if (date[7] == 1 || date[7] == 7) DayType.WEEKEND else DayType.WEEKDAY
     }
 
-    fun updateEvent(event: TodoEvent){
+    fun updateEvent(event: TodoEventDTO){
         viewModelScope.launch(Dispatchers.IO) {
             jobDatabase.updateEvent(event)
         }

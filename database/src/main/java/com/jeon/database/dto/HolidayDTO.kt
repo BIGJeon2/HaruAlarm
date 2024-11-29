@@ -1,4 +1,4 @@
-package com.jeon.database.Entity
+package com.jeon.database.dto
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "holidays"
 )
-data class Holiday(
+data class HolidayDTO(
     @ColumnInfo(name = "year")
     val year: Int,
     @PrimaryKey

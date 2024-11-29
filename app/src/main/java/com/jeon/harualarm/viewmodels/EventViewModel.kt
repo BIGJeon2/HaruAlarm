@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jeon.database.Entity.TodoEvent
+import com.jeon.database.dto.TodoEventDTO
 import com.jeon.database.repository.TodoEventRepository
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
@@ -19,7 +19,7 @@ class EventViewModel @Inject constructor(private val eventRepository: TodoEventR
     var dateConverter = DateConverter()
     var dateProvider = DateProvider()
     override var date = mutableStateOf(Calendar.getInstance().apply { set(Calendar.DATE, 1) })
-    override var eventList = SnapshotStateList<TodoEvent>()
+    override var eventList = SnapshotStateList<TodoEventDTO>()
 
     fun setNextDate(){
         val newDate = (date.value.clone() as Calendar).apply {
@@ -43,21 +43,21 @@ class EventViewModel @Inject constructor(private val eventRepository: TodoEventR
         }
     }
 
-    override fun addEvent(date: Calendar, event: TodoEvent) {
+    override fun addEvent(date: Calendar, event: TodoEventDTO) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.insertEvent(event)
             eventList.add(event)
         }
     }
 
-    override fun deleteEvent(event: TodoEvent) {
+    override fun deleteEvent(event: TodoEventDTO) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.deletedEvent(event)
             eventList.remove(event)
         }
     }
 
-    override fun updateEvent(event: TodoEvent) {
+    override fun updateEvent(event: TodoEventDTO) {
         viewModelScope.launch(Dispatchers.IO) {
             eventRepository.updateEvent(event)
         }

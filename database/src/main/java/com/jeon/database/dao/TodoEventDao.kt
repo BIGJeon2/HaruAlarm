@@ -5,25 +5,25 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.jeon.database.Entity.TodoEvent
+import com.jeon.database.dto.TodoEventDTO
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoEventDao {
     @Insert
-    fun insertEvent(event: TodoEvent)
+    fun insertEvent(event: TodoEventDTO)
 
     @Delete
-    fun deletedEvent(event: TodoEvent)
+    fun deletedEvent(event: TodoEventDTO)
 
     @Update
-    fun updateEvent(event: TodoEvent)
+    fun updateEvent(event: TodoEventDTO)
 
     @Query("SELECT * FROM todo_event_table")
-    fun getAllEvent(): Flow<List<TodoEvent>>
+    fun getAllEvent(): Flow<List<TodoEventDTO>>
 
     @Query("SELECT * FROM todo_event_table WHERE date_id = :dateID")
-    fun getEvent(dateID: String): List<TodoEvent>
+    fun getEvent(dateID: String): List<TodoEventDTO>
 
     @Query("SELECT COUNT(*) FROM todo_event_table WHERE date_id = :dateID")
     fun getEventSize(dateID: String): Int
