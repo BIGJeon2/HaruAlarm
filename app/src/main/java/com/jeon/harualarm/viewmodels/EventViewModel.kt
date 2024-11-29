@@ -38,9 +38,8 @@ class EventViewModel @Inject constructor(private val eventRepository: TodoEventR
     override fun getEvent(date: Calendar) {
         viewModelScope.launch(Dispatchers.IO) {
             eventList.clear()
-            eventRepository.getEventList(dateConverter.dateID(date)).collect{ event ->
-                eventList.addAll(event)
-            }
+            val todoEventList = eventRepository.getEventList(dateConverter.dateID(date))
+            eventList.addAll(todoEventList)
         }
     }
 

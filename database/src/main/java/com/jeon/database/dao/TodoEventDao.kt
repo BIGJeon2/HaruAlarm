@@ -23,7 +23,7 @@ interface TodoEventDao {
     fun getAllEvent(): Flow<List<TodoEvent>>
 
     @Query("SELECT * FROM todo_event_table WHERE date_id = :dateID")
-    fun getEvent(dateID: String): Flow<List<TodoEvent>>
+    fun getEvent(dateID: String): List<TodoEvent>
 
     @Query("SELECT COUNT(*) FROM todo_event_table WHERE date_id = :dateID")
     fun getEventSize(dateID: String): Int

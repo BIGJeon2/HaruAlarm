@@ -40,9 +40,8 @@ class CalendarViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             jobDatabase.insertEvent(event)
         }
+        setDayList()
     }
-
-    fun getTodoList(date: CalendarDate): Flow<List<TodoEvent>> = jobDatabase.getEventList(date.dateID)
 
     private fun getHolidayList(){
         viewModelScope.launch(Dispatchers.IO) {
@@ -116,7 +115,8 @@ class CalendarViewModel @Inject constructor(
         val holiday = getHoliday(dateID)
         val type = if (holiday != null) com.jeon.model.vo.DayType.HOLIDAY else checkDayType(date)
         val description = holiday?.description ?: ""
-        return CalendarDate(date, dateID, type, description)
+        val todoList = jobDatabase.getEventList(dateID)
+        return CalendarDate(date, dateID, type, description, todoList)
     }
 
     private suspend fun getHoliday(dateID: String): Holiday?{

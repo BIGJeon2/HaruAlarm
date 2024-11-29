@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jeon.database.Entity.TodoEvent
 import com.jeon.harualarm.util.DateConverter
 import com.jeon.harualarm.util.DateProvider
 import com.jeon.harualarm.CalendarDate
@@ -50,7 +51,8 @@ class CustomCalendarView {
 
     @Composable
     fun BasicCalendarView(
-        calendarViewModel: CalendarViewModel,
+        currDate: Calendar,
+        dayList: List<CalendarDate>,
         paddingValues: Dp,
         isSwipe: Boolean,
         onLeftSwipe: () -> Unit?,
@@ -87,13 +89,13 @@ class CustomCalendarView {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(modifier = Modifier.padding(6.dp)) {
-                CalendarHeader(calendarViewModel.currDate.value, onLeftSwipe, onRightSwipe)
+                CalendarHeader(currDate, onLeftSwipe, onRightSwipe)
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = MainColor
                 )
                 CalendarDayName()
-                CalendarDayList(calendarViewModel, calendarViewModel.dayList, onDateClick)
+                CalendarDayList(dayList, onDateClick)
             }
         }
     }
@@ -183,7 +185,6 @@ class CustomCalendarView {
 
     @Composable
     fun CalendarDayList (
-        calendarViewModel: CalendarViewModel?,
         dayList: List<CalendarDate>,
         onDateClick: (Calendar) -> Unit?
     ) {
@@ -208,10 +209,7 @@ class CustomCalendarView {
                                 if (dayList[index].type == DayType.WEEKDAY) Color.Black else Color.Red
                             val date = dateConverter.getDay(displayDay.calendarDate)
                             val description = displayDay.description
-                            val todoList = calendarViewModel?.getTodoList(displayDay)
-                                ?.collectAsState(
-                                    initial = emptyList()
-                                )
+                            val todoList = displayDay.todoList
                             Box(
                                 modifier = Modifier
                                     .weight(1f)
@@ -247,12 +245,11 @@ class CustomCalendarView {
                                                     fontSize = 10.sp,
                                                 )
                                             }
-                                            if (todoList != null && todoList.value.isNotEmpty()){
-                                                val todoItems = todoList.value
-                                                if (todoItems.size >= 3){
+                                            if (todoList.isNotEmpty()){
+                                                if (todoList.size >= 3){
                                                     if (displayDay.type == DayType.HOLIDAY){
                                                         Column {
-                                                            val todo = todoItems[0]
+                                                            val todo = todoList[0]
                                                             AlarmItemView().AlarmItemMinimal(
                                                                 todoEvent = todo,
                                                                 padding = 0.dp
@@ -261,7 +258,7 @@ class CustomCalendarView {
                                                     }else{
                                                         Column {
                                                             for (i in 0..1) {
-                                                                val todo = todoItems[i]
+                                                                val todo = todoList[i]
                                                                 AlarmItemView().AlarmItemMinimal(
                                                                     todoEvent = todo,
                                                                     padding = 0.dp
@@ -271,13 +268,13 @@ class CustomCalendarView {
                                                     }
                                                     Text(
                                                         modifier = Modifier.fillMaxWidth(),
-                                                        text = "+${todoItems.size - 2}",
+                                                        text = "+${todoList.size - 2}",
                                                         fontSize = 10.sp,
                                                         color = Color.Black,
                                                         textAlign = TextAlign.Center)
                                                 }else{
                                                     Column {
-                                                        for (todo in todoItems) {
+                                                        for (todo in todoList) {
                                                             AlarmItemView().AlarmItemMinimal(
                                                                 todoEvent = todo,
                                                                 padding = 0.dp
@@ -312,7 +309,8 @@ fun CalendarViewPreview(){
                 date,
                 dateConverter.dateID(date),
                 DayType.WEEKDAY,
-                "Description"
+                "Description",
+                listOf()
             )
         )
     }
@@ -333,7 +331,7 @@ fun CalendarViewPreview(){
                 color = MainColor
             )
             CustomCalendarView().CalendarDayName()
-            CustomCalendarView().CalendarDayList(null, dayList, onDateClick = {})
+            CustomCalendarView().CalendarDayList(dayList, onDateClick = {})
         }
     }
 }

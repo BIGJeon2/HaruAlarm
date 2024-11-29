@@ -76,7 +76,8 @@ class MainActivity : ComponentActivity() {
                             padding = 6.dp
                         )
                         CustomCalendarView().BasicCalendarView(
-                            calendarViewModel,
+                            calendarViewModel.currDate.value,
+                            calendarViewModel.dayList,
                             paddingValues = 6.dp,
                             isSwipe = true,
                             onLeftSwipe = {calendarViewModel.setBeforeMonth()},
@@ -103,7 +104,8 @@ fun MainActivityPreview() {
                 currDate,
                 dateConverter.dateID(currDate),
                 DayType.WEEKDAY,
-                "휴일정보"
+                "휴일정보",
+                listOf()
             )
         )
     }
